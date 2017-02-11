@@ -1,0 +1,17 @@
+{
+    "name": "redbox/rd",
+    "description": "Batteries not included Docker environment for Magento 2.",
+    "require": {
+        "symfony/console": "^3.2",
+        "guzzlehttp/guzzle": "^6.2",
+        "symfony/filesystem": "^3.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Max Bucknell",
+            "email": "max.bucknell@redboxdigital.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
