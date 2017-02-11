@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  magento_webserver:
+    depends_on:
+      - "magento_appserver_debug"
+
+  magento_appserver_debug:
+    image: "redboxdigital/php:7.0-xdebug"
+    networks:
+      - "magento"
+    volumes_from:
+      - "magento_appserver"
+    depends_on:
+      - "magento_appserver"
+
+  magento_mail:
+    image: "redboxdigital/mailcatcher"
+    networks:
+      - "magento"
+
+  magento_appserver:
+    depends_on:
+      - "magento_mail"
