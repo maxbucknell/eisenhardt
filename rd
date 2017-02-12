@@ -3,7 +3,7 @@
 
 use Redbox\RD\Application;
 
-require './vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
 $app = new Application('Redbox Docker');
 $app->run();

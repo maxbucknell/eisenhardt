@@ -41,6 +41,13 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $output->writeln('<info>init command</>');
+        $cwd = getcwd();
+        $location = __DIR__;
+        $destination = "{$cwd}/.rd";
+        $src = "{$location}/../../../../project-template";
+
+        shell_exec("cp -r {$src} {$destination}");
+
+        $output->writeln("Initializing Redbox Docker project in <info>{$destination}</>");
     }
 }
