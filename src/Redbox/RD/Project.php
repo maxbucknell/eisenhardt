@@ -75,7 +75,7 @@ class Project
     public function getRelativeDirectory($dir)
     {
         return $this->filesystem->makePathRelative(
-            $cwd,
+            $dir,
             $this->getInstallationDirectory()
         );
     }

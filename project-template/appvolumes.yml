@@ -12,5 +12,5 @@ services:
     image: "alpine"
     command: "sh"
     volumes:
-      - "./magento:/mnt/magento"
+      - "../:/mnt/magento"
 

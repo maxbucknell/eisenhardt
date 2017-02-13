@@ -52,6 +52,6 @@ class ProjectFactory
             );
         }
 
-        return $this->findInParent($filename, dirname($dir));
+        return static::findInParent($filename, dirname($dir));
     }
 }
