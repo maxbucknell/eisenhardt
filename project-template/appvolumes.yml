@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  magento_webserver:
+    volumes_from:
+      - "magento_appdata"
+  magento_appserver:
+    volumes_from:
+      - "magento_appdata"
+
+  magento_appdata:
+    image: "alpine"
+    command: "sh"
+    volumes:
+      - "./magento:/mnt/magento"
+

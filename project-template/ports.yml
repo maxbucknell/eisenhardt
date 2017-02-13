@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  magento_webserver:
+    ports:
+      - "80:80"
+      - "443:443"
+  magento_database:
+    ports:
+      - "3306:3306"
+  magento_messagequeue:
+    ports:
+      - "15672:15672"
+  magento_mail:
+    ports:
+      - "1080:1080"

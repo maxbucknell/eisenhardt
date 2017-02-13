@@ -11,8 +11,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Redbox\RD\Project;
+use Redbox\RD\ProjectFactory;
 
 /**
  * Redbox Docker run command.
@@ -22,16 +22,16 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 class RunCommand extends Command
 {
     /**
-     * @var Filesystem
+     * @var Project
      */
-    private $fs;
+    private $project;
 
     /**
      * @inheritdoc
      */
     protected function configure()
     {
-        $this->fs = new Filesystem();
+        $this->project = ProjectFactory::findFromWorkingDirectory();
 
         $this
             ->setName('run')
@@ -59,8 +59,7 @@ EOT
         OutputInterface $output
     ) {
         $command = implode(' ', $input->getArgument('container_command'));
-
-        $workingDirectory = $this->getWorkingDirectory();
+        $workingDirectory = $this->project->getRelativeDirectory(getcwd());
 
         passthru(<<<CMD
 docker run \
@@ -81,49 +80,5 @@ docker run \
     {$command}
 CMD
         );
-    }
-
-    private function getWorkingDirectory()
-    {
-        $root = $this->getRedboxDockerInstallationDirectory();
-        $cwd = getcwd();
-
-        $relativePath = $this->fs->makePathRelative(
-            $cwd,
-            $root
-        );
-
-        return "/mnt/www/{$relativePath}";
-    }
-
-    /**
-     * Find root directory of project.
-     */
-    private function getRedboxDockerInstallationDirectory()
-    {
-        return $this->findInParent('.rd');
-    }
-
-    /**
-     * Find a given filename in parent directories.
-     *
-     * @param string $filename Name of file to find.
-     * @param string $dir starting directory.
-     */
-    private function findInParent($filename, $dir = null)
-    {
-        if (is_null($dir)) {
-            $dir = getcwd();
-        }
-
-        if ($this->fs->exists("{$dir}/{$filename}")) {
-            return $dir;
-        } elseif ($dir === '/') {
-            throw new FileNotFoundException(
-                "File {$filename} not found in any parent directory"
-            );
-        } else {
-            return $this->findInParent($filename, dirname($dir));
-        }
     }
 }

@@ -13,6 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Redbox\RD\Command\InitCommand;
 use Redbox\RD\Command\RunCommand;
+use Redbox\RD\Command\StartCommand;
+use Redbox\RD\Command\StopCommand;
 
 /**
  * Main Application.
@@ -28,5 +30,7 @@ class Application extends ConsoleApplication
 
         $this->add(new InitCommand());
         $this->add(new RunCommand());
+        $this->add(new StartCommand());
+        $this->add(new StopCommand());
     }
 }

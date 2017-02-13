@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  magento_database:
+    volumes_from:
+      - "magento_databasedata"
+
+  magento_databasedata:
+    image: "alpine"
+    command: "sh"
+    volumes:
+      - "./data:/var/lib/mysql"

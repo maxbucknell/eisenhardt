@@ -7,8 +7,6 @@ services:
       - "magento"
     volumes:
       - "./servers/magento_webserver/etc/nginx.conf:/etc/nginx/nginx.conf"
-    volumes_from:
-      - "magento_appserver"
     depends_on:
       - "magento_appserver"
 
@@ -18,8 +16,6 @@ services:
       - "magento"
     volumes:
       - "./servers/magento_appserver/etc/php.ini:/usr/local/etc/php/php.ini"
-    volumes_from:
-      - "magento_appdata"
     depends_on:
       - "magento_database"
       - "magento_mail"
@@ -28,18 +24,11 @@ services:
       - "magento_session"
       - "magento_messagequeue"
 
-  magento_appdata:
-    image: "alpine"
-    command: "sh"
-    volumes:
-      - "./magento:/mnt/magento"
-
   magento_database:
     image: percona:5.6
     networks:
       - "magento"
     volumes:
-      - "./data:/var/lib/mysql"
       - "./servers/magento_database/etc/mysql/my.cnf:/etc/mysql/my.cnf"
     environment:
       MYSQL_ROOT_PASSWORD: "root"
