@@ -10,6 +10,8 @@ namespace Redbox\RD\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 use Redbox\RD\Project;
 use Redbox\RD\ProjectFactory;
 
@@ -35,6 +37,14 @@ class StartCommand extends Command
         $this
             ->setName('start')
             ->setDescription('Start the Redbox Docker project')
+            ->setDefinition(
+                new InputDefinition([
+                    new InputOption(
+                        'map-ports',
+                        'p'
+                    )
+                ])
+            )
             ->setHelp(<<<EOT
 The <info>start</> command starts the Redbox Docker environment, as if
 you turned on your servers.
@@ -49,17 +59,18 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
+        $p = $input->getOption('map-ports');
+        $portInclude = $p ? '-f .rd/ports.yml' : '';
         $workingDirectory = $this->project->getInstallationDirectory();
         chdir($workingDirectory);
 
         passthru(<<<CMD
 docker-compose \
-  -p rd \
   -f .rd/base.yml \
   -f .rd/dev.yml \
   -f .rd/appvolumes.yml \
   -f .rd/dbvolumes.yml \
-  -f .rd/ports.yml \
+  {$portInclude} \
   up -d
 CMD
         );

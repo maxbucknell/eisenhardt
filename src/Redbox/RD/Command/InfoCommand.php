@@ -54,12 +54,10 @@ EOT
 
         $result = shell_exec(<<<CMD
 docker-compose \
-  -p rd \
   -f .rd/base.yml \
   -f .rd/dev.yml \
   -f .rd/appvolumes.yml \
   -f .rd/dbvolumes.yml \
-  -f .rd/ports.yml \
   ps
 CMD
         );
@@ -67,7 +65,8 @@ CMD
         $rows = explode("\n", $result);
         $containers = array_slice($rows, 2, -1);
         $rows = array_map(
-            function ($container) {
+            function ($container) use ($output) {
+                $output->writeln($container);
                 $row = [];
                 $isUp = strpos($container, 'Up') !== false;
 

@@ -54,12 +54,10 @@ EOT
 
         passthru(<<<CMD
 docker-compose \
-  -p rd \
   -f .rd/base.yml \
   -f .rd/dev.yml \
   -f .rd/appvolumes.yml \
   -f .rd/dbvolumes.yml \
-  -f .rd/ports.yml \
   stop
 CMD
         );
