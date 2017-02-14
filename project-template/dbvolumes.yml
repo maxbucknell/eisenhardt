@@ -7,6 +7,8 @@ services:
 
   magento_databasedata:
     image: "alpine"
+    networks:
+      - "magento"
     command: "sh"
     volumes:
       - "./data:/var/lib/mysql"

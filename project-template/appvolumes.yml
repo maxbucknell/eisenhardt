@@ -10,6 +10,8 @@ services:
 
   magento_appdata:
     image: "alpine"
+    networks:
+      - "magento"
     command: "sh"
     volumes:
       - "../:/mnt/magento"
