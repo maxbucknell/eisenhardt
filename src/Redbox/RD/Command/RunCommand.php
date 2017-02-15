@@ -61,14 +61,15 @@ EOT
         $command = implode(' ', $input->getArgument('container_command'));
         $relativeDirectory = $this->project->getRelativeDirectory(getcwd());
         $workingDirectory = "/mnt/magento/{$relativeDirectory}";
+        $projectName = $this->project->getProjectName();
+        $networkName = $this->project->getNetworkName();
 
         passthru(<<<CMD
 docker run \
     -it \
     --rm \
-    --volumes-from="rd_magento_appserver_1" \
-    --volumes-from="rd_frontend_appdata_1" \
-    --network="rd_magento" \
+    --volumes-from="{$projectName}_magento_appserver_1" \
+    --network="{$networkName}" \
     -u "\$(id -u):82" \
     -v "/etc/passwd:/etc/passwd" \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts" \

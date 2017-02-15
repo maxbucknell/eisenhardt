@@ -79,4 +79,26 @@ class Project
             $this->getInstallationDirectory()
         );
     }
+
+    /**
+     * Return name of project.
+     *
+     * @return string
+     */
+    public function getProjectName()
+    {
+        $directoryName = basename($this->getInstallationDirectory());
+
+        return preg_replace('{[^a-zA-Z0-9]}', '', $directoryName);
+    }
+
+    /**
+     * Return name of Magento network in project.
+     *
+     * @return string
+     */
+    public function getNetworkName()
+    {
+        return "{$this->getProjectName()}_magento";
+    }
 }

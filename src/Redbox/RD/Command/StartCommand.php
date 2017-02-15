@@ -64,12 +64,15 @@ EOT
         $workingDirectory = $this->project->getInstallationDirectory();
         chdir($workingDirectory);
 
+        $projectName = $this->project->getProjectName();
+
         passthru(<<<CMD
 docker-compose \
   -f .rd/base.yml \
   -f .rd/dev.yml \
   -f .rd/appvolumes.yml \
   -f .rd/dbvolumes.yml \
+  -p {$projectName} \
   {$portInclude} \
   up -d
 CMD

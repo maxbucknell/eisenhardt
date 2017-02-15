@@ -50,6 +50,7 @@ EOT
         OutputInterface $output
     ) {
         $workingDirectory = $this->project->getInstallationDirectory();
+        $projectName = $this->project->getProjectName();
         chdir($workingDirectory);
 
         $result = shell_exec(<<<CMD
@@ -58,6 +59,7 @@ docker-compose \
   -f .rd/dev.yml \
   -f .rd/appvolumes.yml \
   -f .rd/dbvolumes.yml \
+  -p {$projectName} \
   ps
 CMD
         );
@@ -97,6 +99,7 @@ CMD
 
     private function getIPAddress($containerName)
     {
+        $networkName = $this->project->getNetworkName();
         $infoJson = shell_exec(<<<CMD
 docker inspect {$containerName}
 CMD
@@ -104,6 +107,6 @@ CMD
 
         $info = json_decode($infoJson, true);
 
-        return $info[0]['NetworkSettings']['Networks']['rd_magento']['IPAddress'];
+        return $info[0]['NetworkSettings']['Networks'][$networkName]['IPAddress'];
     }
 }
