@@ -67,8 +67,7 @@ CMD
         $rows = explode("\n", $result);
         $containers = array_slice($rows, 2, -1);
         $rows = array_map(
-            function ($container) use ($output) {
-                $output->writeln($container);
+            function ($container) {
                 $row = [];
                 $isUp = strpos($container, 'Up') !== false;
 
