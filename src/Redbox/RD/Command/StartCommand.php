@@ -41,7 +41,9 @@ class StartCommand extends Command
                 new InputDefinition([
                     new InputOption(
                         'map-ports',
-                        'p'
+                        'p',
+                        null,
+                        'Map important ports to your host'
                     )
                 ])
             )
