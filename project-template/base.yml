@@ -11,14 +11,13 @@ services:
       - "magento_appserver"
 
   magento_appserver:
-    image: "redboxdigital/php:7.0"
+    image: "redboxdigital/php:7.0-debian"
     networks:
       - "magento"
     volumes:
       - "./servers/magento_appserver/etc/php.ini:/usr/local/etc/php/php.ini"
     depends_on:
       - "magento_database"
-      - "magento_mail"
       - "magento_cache"
       - "magento_fpc"
       - "magento_session"

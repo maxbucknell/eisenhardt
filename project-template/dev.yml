@@ -5,8 +5,12 @@ services:
     depends_on:
       - "magento_appserver_debug"
 
+  magento_appserver:
+    depends_on:
+      - "magento_mail"
+
   magento_appserver_debug:
-    image: "redboxdigital/php:7.0-xdebug"
+    image: "redboxdigital/php:7.0-xdebug-debian"
     networks:
       - "magento"
     volumes_from:
