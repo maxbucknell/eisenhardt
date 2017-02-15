@@ -10,6 +10,8 @@ namespace Redbox\RD\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Redbox\RD\Project;
 use Redbox\RD\ProjectFactory;
@@ -36,11 +38,21 @@ class RunCommand extends Command
         $this
             ->setName('run')
             ->setDescription('Run a command inside a Redbox Docker environment')
-            ->addArgument(
-                'container_command',
-                InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
-                'Command to run in container',
-                [ 'bash' ]
+            ->setDefinition(
+                new InputDefinition([
+                    new InputOption(
+                        'debug',
+                        'd',
+                        null,
+                        'Run container with Xdebug configured'
+                    ),
+                    new InputArgument(
+                        'container_command',
+                        InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
+                        'Command to run in container',
+                        [ 'bash' ]
+                    )
+                ])
             )
             ->setHelp(<<<EOT
 The <info>run</> command creates an ephemeral container based on the
@@ -64,6 +76,9 @@ EOT
         $projectName = $this->project->getProjectName();
         $networkName = $this->project->getNetworkName();
 
+        $tag = $input->getOption('debug') ? '7.0-xdebug-debian' : '7.0-debian';
+        $image = "redboxdigital/docker-console:{$tag}";
+
         passthru(<<<CMD
 docker run \
     -it \
@@ -79,7 +94,7 @@ docker run \
     -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK" \
     -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK" \
     -w "{$workingDirectory}" \
-    redboxdigital/docker-console:7.0 \
+    {$image} \
     {$command}
 CMD
         );
