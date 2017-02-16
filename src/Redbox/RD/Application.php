@@ -16,6 +16,7 @@ use Redbox\RD\Command\RunCommand;
 use Redbox\RD\Command\StartCommand;
 use Redbox\RD\Command\StopCommand;
 use Redbox\RD\Command\InfoCommand;
+use Redbox\RD\Command\FixPermissionsCommand;
 
 /**
  * Main Application.
@@ -34,5 +35,6 @@ class Application extends ConsoleApplication
         $this->add(new StartCommand());
         $this->add(new StopCommand());
         $this->add(new InfoCommand());
+        $this->add(new FixPermissionsCommand());
     }
 }
