@@ -11,7 +11,7 @@ services:
       - "magento_appserver"
 
   magento_appserver:
-    image: "redboxdigital/php:7.0-debian"
+    image: "redboxdigital/php:7.0"
     networks:
       - "magento"
     volumes:

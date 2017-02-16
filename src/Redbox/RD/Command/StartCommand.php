@@ -44,6 +44,12 @@ class StartCommand extends Command
                         'p',
                         null,
                         'Map important ports to your host'
+                    ),
+                    new InputOption(
+                        'use-debian',
+                        'd',
+                        null,
+                        'Run appservers as Debian rather than Alpine'
                     )
                 ])
             )
@@ -62,20 +68,24 @@ EOT
         OutputInterface $output
     ) {
         $p = $input->getOption('map-ports');
+        $d = $input->getOption('use-debian');
+
         $portInclude = $p ? '-f .rd/ports.yml' : '';
+        $debianInclude = $d ? '-f .rd/debian.yml -f .rd/debian-dev.yml' : '';
         $workingDirectory = $this->project->getInstallationDirectory();
         chdir($workingDirectory);
 
         $projectName = $this->project->getProjectName();
 
         passthru(<<<CMD
-docker-compose \
-  -f .rd/base.yml \
-  -f .rd/dev.yml \
+docker-compose      \
+  -f .rd/base.yml    \
+  -f .rd/dev.yml      \
+  {$debianInclude}     \
   -f .rd/appvolumes.yml \
-  -f .rd/dbvolumes.yml \
-  -p {$projectName} \
-  {$portInclude} \
+  -f .rd/dbvolumes.yml   \
+  {$portInclude}          \
+  -p {$projectName}        \
   up -d
 CMD
         );

@@ -42,9 +42,15 @@ class RunCommand extends Command
                 new InputDefinition([
                     new InputOption(
                         'debug',
-                        'd',
+                        'x',
                         null,
                         'Run container with Xdebug configured'
+                    ),
+                    new InputOption(
+                        'use-debian',
+                        'd',
+                        null,
+                        'Run container as Debian rather than Alpine'
                     ),
                     new InputArgument(
                         'container_command',
@@ -76,27 +82,59 @@ EOT
         $projectName = $this->project->getProjectName();
         $networkName = $this->project->getNetworkName();
 
-        $tag = $input->getOption('debug') ? '7.0-xdebug-debian' : '7.0-debian';
+        $tag = $this->getTag(
+            $input->getOption('debug'),
+            $input->getOption('use-debian')
+        );
         $image = "redboxdigital/docker-console:{$tag}";
 
         passthru(<<<CMD
-docker run \
-    -it \
-    --rm \
+docker run                                           \
+    -it                                               \
+    --rm                                               \
     --volumes-from="{$projectName}_magento_appserver_1" \
-    --network="{$networkName}" \
-    -u "\$(id -u):82" \
-    -v "/etc/passwd:/etc/passwd" \
-    -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts" \
-    -v "\$HOME/.composer:\$HOME/.composer" \
-    -v "\$HOME/.npm:\$HOME/.npm" \
-    -e COMPOSER_HOME="\$HOME/.composer" \
-    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK" \
-    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK" \
-    -w "{$workingDirectory}" \
-    {$image} \
+    --network="{$networkName}"                           \
+    -u "\$(id -u):82"                                     \
+    -v "/etc/passwd:/etc/passwd"                           \
+    -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
+    -v "\$HOME/.composer:\$HOME/.composer"                   \
+    -v "\$HOME/.npm:\$HOME/.npm"                              \
+    -e COMPOSER_HOME="\$HOME/.composer"                        \
+    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                        \
+    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                           \
+    -w "{$workingDirectory}"                                      \
+    {$image}                                                       \
     {$command}
 CMD
         );
+    }
+
+    /**
+     * Get Console Container Tag.
+     *
+     * Depending on the circumstances, a different container version may
+     * be used.
+     *
+     * @param bool $debug Use Xdebug.
+     * @param bool $debian Use Debian.
+     * @return string
+     */
+    private function getTag(
+        bool $debug,
+        bool $debian
+    ) {
+        if ($debug && $debian) {
+            return 'redboxdigital/docker-console:7.0-xdebug-debian';
+        }
+
+        if ($debug) {
+            return 'redboxdigital/docker-console:7.0-xdebug';
+        }
+
+        if ($debian) {
+            return 'redboxdigital/docker-console:7.0-debian';
+        }
+
+        return 'redboxdigital/docker-console:7.0';
     }
 }

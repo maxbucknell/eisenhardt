@@ -1,0 +1,6 @@
+version: '2'
+
+services:
+  magento_appserver_debug:
+    image: "redboxdigital/php:7.0-xdebug-debian"
+

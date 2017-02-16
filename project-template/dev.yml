@@ -10,7 +10,7 @@ services:
       - "magento_mail"
 
   magento_appserver_debug:
-    image: "redboxdigital/php:7.0-xdebug-debian"
+    image: "redboxdigital/php:7.0-xdebug"
     networks:
       - "magento"
     volumes_from:
