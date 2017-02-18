@@ -100,10 +100,11 @@ docker run                                           \
     -v "\$HOME/.composer:\$HOME/.composer"                   \
     -v "\$HOME/.npm:\$HOME/.npm"                              \
     -e COMPOSER_HOME="\$HOME/.composer"                        \
-    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                        \
-    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                           \
-    -w "{$workingDirectory}"                                      \
-    {$image}                                                       \
+    -e XDEBUG_CONFIG="idekey=docker"                            \
+    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                         \
+    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                            \
+    -w "{$workingDirectory}"                                       \
+    {$image}                                                        \
     {$command}
 CMD
         );
