@@ -9,8 +9,10 @@ you.
 ## Installation
 
 ```bash
-composer require -g redboxdigital/rd
-rd info
+composer global config repositories.rd vcs https://github.com/maxbucknell/rd.git
+composer global config "minimum-stability" "dev"
+composer global config "prefer-stable" "true"
+composer global require redbox/rd
 ```
 
 ## Usage
