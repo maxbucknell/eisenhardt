@@ -59,7 +59,7 @@ In particular, we have containers for:
 *	Percona 5.6
 *	Redis (for cache and session backend)
 *	RabbitMQ (with management interface)
-*	Mailcatcher, for receiving emails.
+*	Mailhog, for receiving emails.
 
 You can find more information about them by following the links to the relevant
 image pages on Docker Hub.

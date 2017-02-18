@@ -19,7 +19,20 @@ services:
       - "magento_appserver"
 
   magento_mail:
-    image: "redboxdigital/mailcatcher"
+    image: "mailhog/mailhog"
+    user: "root"
+    expose:
+      - "25"
+      - "80"
+    environment:
+      MH_SMTP_BIND_ADDR: "0.0.0.0:25"
+      MH_UI_BIND_ADDR: "0.0.0.0:80"
+      MH_API_BIND_ADDR: "0.0.0.0:80"
+      MH_HOSTNAME: "magento_mail"
+      MH_MAILDIR_PATH: "/mnt/mail"
+      MH_STORAGE: "maildir"
+    volumes:
+      - "./mail:/mnt/mail"
     networks:
       - "magento"
 
