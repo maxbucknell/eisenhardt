@@ -77,7 +77,8 @@ EOT
 
         $projectName = $this->project->getProjectName();
 
-        passthru(<<<CMD
+        $output->writeln('Starting...');
+        $result = shell_exec(<<<CMD
 docker-compose      \
   -f .rd/base.yml    \
   -f .rd/dev.yml      \

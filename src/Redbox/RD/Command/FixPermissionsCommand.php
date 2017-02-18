@@ -56,7 +56,7 @@ EOT
         $projectName = $this->project->getProjectName();
         $networkName = $this->project->getNetworkName();
 
-        $output->writeln('Correcting owner...');
+        $output->writeln('<info>Correcting owner</>');
         shell_exec(<<<CMD
 docker run \
   -it \
@@ -69,7 +69,7 @@ docker run \
 CMD
         );
 
-        $output->writeln('Correcting permissions for normal files...');
+        $output->writeln('<info>Correcting permissions for normal files</>');
         shell_exec(<<<CMD
 docker run \
   -it \
@@ -82,7 +82,7 @@ docker run \
 CMD
         );
 
-        $output->writeln('Correcting permissions for directories...');
+        $output->writeln('<info>Correcting permissions for directories</>');
         shell_exec(<<<CMD
 docker run \
   -it \
@@ -95,7 +95,7 @@ docker run \
 CMD
         );
 
-        $output->writeln('Adding sticky bit to group permissions for directories...');
+        $output->writeln('<info>Adding sticky bit to group permissions for directories</>');
         shell_exec(<<<CMD
 docker run \
   -it \
@@ -108,7 +108,7 @@ docker run \
 CMD
         );
 
-        $output->writeln('Adding group write permissions to <info>var/</>...');
+        $output->writeln('<info>Adding group write permissions to <fg=yellow>var/</></>');
         shell_exec(<<<CMD
 docker run \
   -it \
@@ -121,7 +121,7 @@ docker run \
 CMD
         );
 
-        $output->writeln('Adding group write permissions to <info>pub/</>...');
+        $output->writeln('<info>Adding group write permissions to <fg=yellow>pub/</></>');
         shell_exec(<<<CMD
 docker run \
   -it \
@@ -134,7 +134,7 @@ docker run \
 CMD
         );
 
-        $output->writeln('Making <info>bin/magento</> executable...');
+        $output->writeln('<info>Making <fg=yellow>bin/magento</> executable</>');
         shell_exec(<<<CMD
 docker run \
   -it \
