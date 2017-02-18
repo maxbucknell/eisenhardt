@@ -87,8 +87,14 @@ docker-compose      \
   -f .rd/dbvolumes.yml   \
   {$portInclude}          \
   -p {$projectName}        \
-  up -d
+  up -d 2> /dev/null
 CMD
         );
+        $output->writeln('All containers started:');
+
+        $application = $this->getApplication();
+        $infoCommand = $application->find('info');
+
+        $infoCommand->run($input, $output);
     }
 }
