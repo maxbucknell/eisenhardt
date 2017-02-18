@@ -125,17 +125,17 @@ CMD
         bool $debian
     ) {
         if ($debug && $debian) {
-            return 'redboxdigital/docker-console:7.0-xdebug-debian';
+            return '7.0-xdebug-debian';
         }
 
         if ($debug) {
-            return 'redboxdigital/docker-console:7.0-xdebug';
+            return '7.0-xdebug';
         }
 
         if ($debian) {
-            return 'redboxdigital/docker-console:7.0-debian';
+            return '7.0-debian';
         }
 
-        return 'redboxdigital/docker-console:7.0';
+        return '7.0';
     }
 }
