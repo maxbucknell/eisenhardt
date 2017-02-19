@@ -65,7 +65,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  chown -R "$(id -u):82" .
+  find . \( -path .rd -prune \) -exec chown "$(id -u):82" {} \;
 CMD
         );
 
@@ -78,7 +78,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find . -type f -exec chmod 744 {} \;
+  find . -type f \( -path .rd -prune \) -exec chmod 744 {} \;
 CMD
         );
 
@@ -91,7 +91,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find . -type d -exec chmod 755 {} \;
+  find . -type d \( -path .rd -prune \) -exec chmod 755 {} \;
 CMD
         );
 
@@ -104,7 +104,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find . -type d -exec chmod g+s {} \;
+  find . -type d \( -path .rd -prune \) -exec chmod g+s {} \;
 CMD
         );
 
@@ -117,7 +117,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find var/ -exec chmod g+w {} \;
+  find var/ \( -path .rd -prune \) -exec chmod g+w {} \;
 CMD
         );
 
@@ -130,7 +130,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find pub/ -exec chmod g+w {} \;
+  find pub/ \( -path .rd -prune \) -exec chmod g+w {} \;
 CMD
         );
 
