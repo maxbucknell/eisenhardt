@@ -65,7 +65,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find . \( -path .rd -prune \) -exec chown "$(id -u):82" {} \;
+  find . \( -path .rd -prune \) -exec chown "$(id -u):10118" {} \;
 CMD
         );
 
