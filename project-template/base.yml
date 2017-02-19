@@ -6,7 +6,7 @@ services:
     networks:
       - "magento"
     volumes:
-      - "./servers/magento_webserver/etc/nginx.conf:/etc/nginx/nginx.conf"
+      - "./servers/rd.nginx.conf:/etc/nginx/nginx.conf"
     depends_on:
       - "magento_appserver"
 
@@ -15,7 +15,7 @@ services:
     networks:
       - "magento"
     volumes:
-      - "./servers/magento_appserver/etc/php.ini:/usr/local/etc/php/php.ini"
+      - "./servers/rd.php.ini:/usr/local/etc/php/php.ini"
     depends_on:
       - "magento_database"
       - "magento_cache"
@@ -28,7 +28,7 @@ services:
     networks:
       - "magento"
     volumes:
-      - "./servers/magento_database/etc/mysql/my.cnf:/etc/mysql/my.cnf"
+      - "./servers/rd.my.cnf:/etc/mysql/my.cnf"
     environment:
       MYSQL_ROOT_PASSWORD: "root"
 

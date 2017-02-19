@@ -6,6 +6,8 @@ services:
       - "magento_appserver_debug"
 
   magento_appserver:
+    volumes:
+      - "./servers/mailhog.rd.php.ini:/usr/local/etc/php/conf.d/mailhog.rd.php.ini"
     depends_on:
       - "magento_mail"
 
