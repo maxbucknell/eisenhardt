@@ -78,7 +78,7 @@ EOT
         $projectName = $this->project->getProjectName();
 
         $output->writeln('Starting...');
-        $result = shell_exec(<<<CMD
+        $command = <<<CMD
 docker-compose      \
   -f .rd/base.yml    \
   -f .rd/dev.yml      \
@@ -89,12 +89,10 @@ docker-compose      \
   -p {$projectName}        \
   up -d 2> /dev/null
 CMD
-        );
+        ;
+
+        passthru($command);
         $output->writeln('All containers started:');
-
-        $application = $this->getApplication();
-        $infoCommand = $application->find('info');
-
-        $infoCommand->run($input, $output);
+        $output->writeln('<info>Run <fg=yellow>rd info</> to view IP addresses and container statuses.</>');
     }
 }

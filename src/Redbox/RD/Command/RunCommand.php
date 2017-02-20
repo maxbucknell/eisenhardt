@@ -94,7 +94,7 @@ docker run                                           \
     --rm                                               \
     --volumes-from="{$projectName}_magento_appserver_1" \
     --network="{$networkName}"                           \
-    -u "\$(id -u):82"                                     \
+    -u "\$(id -u):10118"                                  \
     -v "/etc/passwd:/etc/passwd"                           \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
     -v "\$HOME/.composer:\$HOME/.composer"                   \
