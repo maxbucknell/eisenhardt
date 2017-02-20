@@ -99,12 +99,13 @@ docker run                                           \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
     -v "\$HOME/.composer:\$HOME/.composer"                   \
     -v "\$HOME/.npm:\$HOME/.npm"                              \
-    -e COMPOSER_HOME="\$HOME/.composer"                        \
-    -e XDEBUG_CONFIG="idekey=docker"                            \
-    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                         \
-    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                            \
-    -w "{$workingDirectory}"                                       \
-    {$image}                                                        \
+    -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
+    -e COMPOSER_HOME="\$HOME/.composer"                         \
+    -e XDEBUG_CONFIG="idekey=docker"                             \
+    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                          \
+    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                             \
+    -w "{$workingDirectory}"                                        \
+    {$image}                                                         \
     {$command}
 CMD
         );
