@@ -89,7 +89,7 @@ class Project
     {
         $directoryName = basename($this->getInstallationDirectory());
 
-        return preg_replace('{[^a-zA-Z0-9]}', '', $directoryName);
+        return strtolower(preg_replace('{[^a-zA-Z0-9]}', '', $directoryName));
     }
 
     /**
