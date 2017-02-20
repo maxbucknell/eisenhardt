@@ -32,8 +32,6 @@ class StartCommand extends Command
      */
     protected function configure()
     {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
         $this
             ->setName('start')
             ->setDescription('Start the Redbox Docker project')
@@ -67,6 +65,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
+        $this->project = ProjectFactory::findFromWorkingDirectory();
+
         $p = $input->getOption('map-ports');
         $d = $input->getOption('use-debian');
 

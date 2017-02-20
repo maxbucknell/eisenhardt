@@ -33,8 +33,6 @@ class RunCommand extends Command
      */
     protected function configure()
     {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
         $this
             ->setName('run')
             ->setDescription('Run a command inside a Redbox Docker environment')
@@ -76,6 +74,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
+        $this->project = ProjectFactory::findFromWorkingDirectory();
+
         $command = implode(' ', $input->getArgument('container_command'));
         $relativeDirectory = $this->project->getRelativeDirectory(getcwd());
         $workingDirectory = "/mnt/magento/{$relativeDirectory}";

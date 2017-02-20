@@ -30,8 +30,6 @@ class StopCommand extends Command
      */
     protected function configure()
     {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
         $this
             ->setName('stop')
             ->setDescription('Stop the Redbox Docker project')
@@ -49,6 +47,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
+        $this->project = ProjectFactory::findFromWorkingDirectory();
+
         $workingDirectory = $this->project->getInstallationDirectory();
         chdir($workingDirectory);
 

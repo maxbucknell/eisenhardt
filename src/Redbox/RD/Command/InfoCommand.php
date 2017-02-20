@@ -30,8 +30,6 @@ class InfoCommand extends Command
      */
     protected function configure()
     {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
         $this
             ->setName('info')
             ->setDescription('Get information about Redbox Docker installation')
@@ -49,6 +47,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
+        $this->project = ProjectFactory::findFromWorkingDirectory();
+
         $workingDirectory = $this->project->getInstallationDirectory();
         $projectName = $this->project->getProjectName();
         chdir($workingDirectory);

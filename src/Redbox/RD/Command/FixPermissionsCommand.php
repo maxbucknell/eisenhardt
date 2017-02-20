@@ -33,8 +33,6 @@ class FixPermissionsCommand extends Command
      */
     protected function configure()
     {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
         $this
             ->setName('fix-permissions')
             ->setDescription('Fix permissions of your Magento 2 installation')
@@ -53,6 +51,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
+        $this->project = ProjectFactory::findFromWorkingDirectory();
+
         $projectName = $this->project->getProjectName();
         $networkName = $this->project->getNetworkName();
 
