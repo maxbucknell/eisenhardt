@@ -93,7 +93,7 @@ docker run                                           \
     -it                                               \
     --rm                                               \
     --volumes-from="{$projectName}_magento_appserver_1" \
-    --network="{$networkName}"                           \
+    --net="{$networkName}"                               \
     -u "\$(id -u):10118"                                  \
     -v "/etc/passwd:/etc/passwd"                           \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
