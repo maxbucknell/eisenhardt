@@ -152,7 +152,7 @@ Note that we have queue configuration in here, for the Enterprise Message Queue
 framework. If you are using Community edition, you remove it, but it's probably
 not going to cause any damage by remaining.
 
-```
+```php
 <?php
 return array (
   'backend' =>
