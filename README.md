@@ -222,14 +222,32 @@ brent), or you can tell Git not to track permissions.
 
 Stop the Redbox Docker environment, as if you turned off your servers.
 
-## Configuration
+## Configuration for Existing Environments
+
+If you are setting up an existing Magento 2 installation with Redbox Docker, the
+only thing you need to change is `env.php`.
+
+Start off by running `rd init` in the project root, and then `rd start`. You
+will need to add a hosts entry as per the Getting Started instructions. Then set
+the `env.php` parameters correctly.
 
 The following `env.php` should work on pretty much all Redbox Docker
 installations. Feel free to copy verbatim, or take the relevant parts.
 
-Note that we have queue configuration in here, for the Enterprise Message Queue
-framework. If you are using Community edition, you remove it, but it's probably
-not going to cause any damage by remaining.
+Once done, the database will need to be imported. Create the database first,
+with `rd run -- n98-magerun2 db:create`, and then import from a dump with:
+
+```bash
+# path/to/db.sql needs to be within your project root or Docker will not find it.
+rd run -- n98-magerun2 db:import path/to/db.sql
+```
+
+A quick cache flush with `rd run -- n98-magerun2 c:f` and you should be good to
+go.
+
+>	Note: that we have queue configuration in here, for the Enterprise
+Message Queue framework. If you are using Community edition, you remove it, but
+it's probably not going to cause any damage by remaining.
 
 ```php
 <?php
