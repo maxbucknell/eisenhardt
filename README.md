@@ -56,7 +56,7 @@ can be run from any directory inside your Magento 2 installation.
 
 | Flag                 | Description |
 | :------------------- | :---------- |
-| `-p`, `--map-ports`  | Map ports of Redbox Docker environment to host. By default, this does not happen, and Redbox Dockec containers are accessible only from their IP addresses. Use this if you don't like editing your hosts file, or if you are running Docker on a remote machine, including a Mac or Windows computer. |
+| `-p`, `--map-ports`  | Map ports of Redbox Docker environment to host. By default, this does not happen, and Redbox Docker containers are accessible only from their IP addresses. Use this if you don't like editing your hosts file, or if you are running Docker on a remote machine, including a Mac or Windows computer. |
 | `-d`, `--use-debian` | Redbox Docker uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
 
 ### `rd info`
