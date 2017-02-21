@@ -24,8 +24,87 @@ composer global require redbox/rd
 
 ## Getting Started
 
-To create a new Redbox Docker environment, `cd` to the root of your Magento
-2 project, and do this:
+This will walk you through setting up a clean installation of Magento. To use
+Redbox Docker on an existing project, see the section below on that topic.
+
+First of all, create a Magento 2 project
+
+```bash
+composer create-project \
+  --repository-url=https://repo.magento.com/ \
+  magento/project-community-edition:~2.1.0 \
+  --no-install \
+  test-rd
+```
+
+This creates a Magento 2 base project in the `test-rd` directory. Switch to it,
+and set up Redbox Docker:
+
+```bash
+rd init
+rd start
+```
+
+Now we can begin to install Magento. First step is the dependencies:
+
+```bash
+rd run -- composer install
+```
+
+And then the installation. The following command will do it all, but feel free
+to change anything if you need to.
+
+```bash
+rd run -- n98-magerun2 setup:install \
+  --backend-frontname="admin" \
+  --db-host="magento_database" \
+  --db-name="showoff" \
+  --db-user="root" \
+  --db-password="root" \
+  --base-url="http://test-rd.loc/" \
+  --language="en_US" \
+  --timezone="UTC" \
+  --currency="EUR" \
+  --admin-user="redbox.digital" \
+  --admin-password="password123" \
+  --admin-email="redbox.digital@example.com" \
+  --admin-firstname="Redbox" \
+  --admin-lastname="Digital"
+```
+
+If you are running Enterprise, you can configure the Message Queue framework
+with these arguments:
+
+```
+  --amqp-host="magento_messagequeue" \
+  --amqp-port="5672" \
+  --amqp-user="guest" \
+  --amqp-password="guest" \
+  --amqp-virtualhost="/" \
+```
+
+Now there are some final setup tasks, which are optional but encouraged to get
+a quick environment:
+
+```bash
+rd run -d -- n98-magerun2 setup:static-content:deploy
+rd run -- n98-magerun2 cache:flush
+rd run -- n98-magerun2 setup:di:compile
+```
+
+After this, your Magento 2 installation should be ready to use, but you won't
+be able to access it. To do this, run `rd info`, and copy the IP address of the
+`webserver` container. Add an entry to your hosts file:
+
+```
+<ip_address> test-rd.loc
+```
+
+If you visit `test-rd.loc/` in your browser, you should see the home page. Log
+into the admin with `redbox.digital` and `password123`.
+
+To see more details and available options, please check out the rest of the
+documentation.
 
 ```bash
 rd init
