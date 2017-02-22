@@ -37,7 +37,3 @@ services:
       - "./mail:/mnt/mail"
     networks:
       - "magento"
-
-  magento_appserver:
-    depends_on:
-      - "magento_mail"
