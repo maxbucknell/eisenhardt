@@ -13,6 +13,11 @@ Redbox Docker is a very thin wrapper around Docker Compose.
 
 ## Installation
 
+### Dependencies
+
+*	[Docker][install-docker]
+*	[Composer][install-composer] (and PHP)
+
 Install via Composer! (Packagist entry is coming)
 
 ```bash
@@ -49,6 +54,12 @@ Now we can begin to install Magento. First step is the dependencies:
 
 ```bash
 rd run -- composer install
+```
+
+Now is probably a good time to make sure the permissions are correct:
+
+```bash
+rd fix-permissions
 ```
 
 And then the installation. The following command will do it all, but feel free
@@ -635,3 +646,6 @@ support this. More work is needed.
 Redbox Docker was designed to work with Enterprise Edition by default, since
 that's what we use most of the time. It would be nice to make this a flag, and
 remove unnecessary containers for Community Edition.
+
+[install-docker]: https://docs.docker.com/engine/installation/linux/
+[install-composer]: https://getcomposer.org/download/
