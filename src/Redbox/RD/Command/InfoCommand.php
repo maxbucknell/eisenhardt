@@ -53,6 +53,20 @@ EOT
         $projectName = $this->project->getProjectName();
         chdir($workingDirectory);
 
+        // Docker compose has a helpful table formatter which divines
+        // the width of the terminal using stty. If this value is small
+        // enough, it will wrap the table.
+        //
+        // This is unfortunate, since we are parsing these thing
+        // ourselves, we trick it into thinking the width is bigger than
+        // it actually is.
+        //
+        // Yawn.
+        $columnSize = explode(' ', shell_exec('stty size'))[1];
+
+        // Set width to something adequate.
+        shell_exec('stty columns 3000');
+
         $result = shell_exec(<<<CMD
 docker-compose \
   -f .rd/base.yml \
@@ -63,6 +77,9 @@ docker-compose \
   ps
 CMD
         );
+
+        // Restore old width
+        shell_exec("stty columns {$columnSize}");
 
         $rows = explode("\n", $result);
         $containers = array_slice($rows, 2, -1);
