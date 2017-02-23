@@ -79,15 +79,15 @@ EOT
 
         $output->writeln('Starting...');
         $command = <<<CMD
-docker-compose      \
-  -f .rd/base.yml    \
-  -f .rd/dev.yml      \
-  {$debianInclude}     \
-  -f .rd/appvolumes.yml \
-  -f .rd/dbvolumes.yml   \
-  {$portInclude}          \
-  -p {$projectName}        \
-  up -d 2> /dev/null
+docker-compose       \
+  -f .rd/base.yml     \
+  -f .rd/dev.yml       \
+  {$debianInclude}      \
+  -f .rd/appvolumes.yml  \
+  -f .rd/dbvolumes.yml    \
+  {$portInclude}           \
+  -p {$projectName}         \
+  up -d --force-recreate 2> /dev/null
 CMD
         ;
 
