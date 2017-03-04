@@ -50,6 +50,12 @@ EOT
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
         $workingDirectory = $this->project->getInstallationDirectory();
+
+        $output->writeln(
+            "Found project in `{$workingDirectory}`.",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+
         $projectName = $this->project->getProjectName();
         chdir($workingDirectory);
 
@@ -64,10 +70,19 @@ EOT
         // Yawn.
         $columnSize = explode(' ', shell_exec('stty size'))[1];
 
+        $output->writeln(
+            "Collected terminal width as {$columnSize}",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+
         // Set width to something adequate.
+        $output->writeln(
+            "Setting terminal width to 3000",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
         shell_exec('stty columns 3000');
 
-        $result = shell_exec(<<<CMD
+        $command = <<<CMD
 docker-compose \
   -f .rd/base.yml \
   -f .rd/dev.yml \
@@ -76,9 +91,17 @@ docker-compose \
   -p {$projectName} \
   ps
 CMD
+        ;
+
+        $output->writeln(
+            "Running: {$command}",
+            OutputInterface::VERBOSITY_VERBOSE
         );
 
+        $result = shell_exec($command);
+
         // Restore old width
+        $output->writeln("Setting terminal width to {$columnSize}");
         shell_exec("stty columns {$columnSize}");
 
         $rows = explode("\n", $result);

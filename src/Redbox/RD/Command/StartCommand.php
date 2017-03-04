@@ -73,6 +73,10 @@ EOT
         $portInclude = $p ? '-f .rd/ports.yml' : '';
         $debianInclude = $d ? '-f .rd/debian.yml -f .rd/debian-dev.yml' : '';
         $workingDirectory = $this->project->getInstallationDirectory();
+        $output->writeln(
+            "Found project in `{$workingDirectory}`.",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
         chdir($workingDirectory);
 
         $projectName = $this->project->getProjectName();
@@ -91,6 +95,10 @@ docker-compose       \
 CMD
         ;
 
+        $output->writeln(
+            "Running: {$command}",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
         passthru($command);
         $output->writeln('All containers started:');
         $output->writeln('<info>Run <fg=yellow>rd info</> to view IP addresses and container statuses.</>');

@@ -45,8 +45,13 @@ EOT
         $location = __DIR__;
         $destination = "{$cwd}/.rd";
         $src = "{$location}/../../../../project-template";
+        $command = "cp -r {$src} {$destination}";
 
-        shell_exec("cp -r {$src} {$destination}");
+        $output->writeln(
+            "Running: `{$command}`.",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+        shell_exec($command);
 
         $output->writeln("Initializing Redbox Docker project in <info>{$destination}</>");
     }

@@ -50,11 +50,15 @@ EOT
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
         $workingDirectory = $this->project->getInstallationDirectory();
+        $output->writeln(
+            "Found project in `{$workingDirectory}`.",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
         chdir($workingDirectory);
 
         $projectName = $this->project->getProjectName();
 
-        passthru(<<<CMD
+        $command = <<<CMD
 docker-compose \
   -f .rd/base.yml \
   -f .rd/dev.yml \
@@ -63,6 +67,13 @@ docker-compose \
   -p {$projectName} \
   stop
 CMD
+        ;
+
+        $output->writeln(
+            "Running: {$command}",
+            OutputInterface::VERBOSITY_VERBOSE
         );
+
+        passthru($command);
     }
 }

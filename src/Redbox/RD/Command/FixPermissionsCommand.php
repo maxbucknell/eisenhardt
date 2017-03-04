@@ -53,11 +53,17 @@ EOT
     ) {
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
+        $projectDir = $project->getInstallationDirectory;
+        $output->writeln(
+            "Found project in `{$projectDir}`.",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+
         $projectName = $this->project->getProjectName();
         $networkName = $this->project->getNetworkName();
 
-        $output->writeln('<info>Correcting owner</>');
-        shell_exec(<<<CMD
+        $commands = [
+            '<info>Correcting owner</>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -67,10 +73,8 @@ docker run \
   -w /mnt/magento alpine \
   find . -not -path './.rd/*' -exec chown "$(id -u):10118" {} \;
 CMD
-        );
-
-        $output->writeln('<info>Correcting permissions for normal files</>');
-        shell_exec(<<<CMD
+            ,
+            '<info>Correcting permissions for normal files</>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -80,10 +84,8 @@ docker run \
   -w /mnt/magento alpine \
   find . -type f -not -path './.rd/*' -exec chmod 744 {} \;
 CMD
-        );
-
-        $output->writeln('<info>Correcting permissions for directories</>');
-        shell_exec(<<<CMD
+            ,
+            '<info>Correcting permissions for directories</>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -93,10 +95,8 @@ docker run \
   -w /mnt/magento alpine \
   find . -type d -not -path './.rd/*' -exec chmod 755 {} \;
 CMD
-        );
-
-        $output->writeln('<info>Adding sticky bit to group permissions for directories</>');
-        shell_exec(<<<CMD
+            ,
+            '<info>Adding sticky bit to group permissions for directories</>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -106,10 +106,8 @@ docker run \
   -w /mnt/magento alpine \
   find . -type d -not -path './.rd/*' -exec chmod g+s {} \;
 CMD
-        );
-
-        $output->writeln('<info>Adding group write permissions to <fg=yellow>var/</></>');
-        shell_exec(<<<CMD
+            ,
+            '<info>Adding group write permissions to <fg=yellow>var/</></>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -119,10 +117,8 @@ docker run \
   -w /mnt/magento alpine \
   find var/ -not -path './.rd/*' -exec chmod g+w {} \;
 CMD
-        );
-
-        $output->writeln('<info>Adding group write permissions to <fg=yellow>pub/</></>');
-        shell_exec(<<<CMD
+            ,
+            '<info>Adding group write permissions to <fg=yellow>pub/</></>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -132,10 +128,8 @@ docker run \
   -w /mnt/magento alpine \
   find pub/ -not -path './.rd/*' -exec chmod g+w {} \;
 CMD
-        );
-
-        $output->writeln('<info>Making <fg=yellow>bin/magento</> executable</>');
-        shell_exec(<<<CMD
+            ,
+            '<info>Making <fg=yellow>bin/magento</> executable</>' => <<<CMD
 docker run \
   -it \
   --rm \
@@ -145,7 +139,17 @@ docker run \
   -w /mnt/magento alpine \
   chmod +x bin/magento
 CMD
-        );
+            ,
+        ];
+
+        foreach ($commands as $message => $command) {
+            $output->writeln($message);
+            $output->writeln(
+                "Running: {$command}",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+            shell_exec($command);
+        }
 
         $output->writeln('All finished!');
     }

@@ -82,13 +82,20 @@ EOT
         $projectName = $this->project->getProjectName();
         $networkName = $this->project->getNetworkName();
 
+        $projectDirectory = $this->project->getInstallationDirectory();
+        $output->writeln(
+            "Found project in `{$projectDirectory}`.",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+
+
         $tag = $this->getTag(
             $input->getOption('debug'),
             $input->getOption('use-debian')
         );
         $image = "redboxdigital/docker-console:{$tag}";
 
-        passthru(<<<CMD
+        $command = <<<CMD
 docker run                                           \
     -it                                               \
     --rm                                               \
@@ -108,7 +115,14 @@ docker run                                           \
     {$image}                                                         \
     {$command}
 CMD
+        ;
+
+        $output->writeln(
+            "Running: {$command}",
+            OutputInterface::VERBOSITY_VERBOSE
         );
+
+        passthru($command);
     }
 
     /**
