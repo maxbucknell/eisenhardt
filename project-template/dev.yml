@@ -8,6 +8,7 @@ services:
   magento_appserver:
     volumes:
       - "./servers/mailhog.rd.php.ini:/usr/local/etc/php/conf.d/mailhog.rd.php.ini"
+      - "./servers/rd.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
     depends_on:
       - "magento_mail"
 
