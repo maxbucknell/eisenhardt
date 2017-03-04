@@ -62,6 +62,13 @@ Now is probably a good time to make sure the permissions are correct:
 rd fix-permissions
 ```
 
+And make sure the database exists:
+
+```bash
+rd run -- mysql -hmagento_database -uroot -proot
+MySQL [(none)]> create database showoff;
+```
+
 And then the installation. The following command will do it all, but feel free
 to change anything if you need to.
 
