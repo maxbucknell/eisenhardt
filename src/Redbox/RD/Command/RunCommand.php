@@ -95,6 +95,8 @@ EOT
         );
         $image = "redboxdigital/docker-console:{$tag}";
 
+        $ipAddress = trim(`hostname -I | cut -d" " -f1`);
+
         $command = <<<CMD
 docker run                                           \
     -it                                               \
@@ -108,11 +110,12 @@ docker run                                           \
     -v "\$HOME/.npm:\$HOME/.npm"                              \
     -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
     -e COMPOSER_HOME="\$HOME/.composer"                         \
-    -e XDEBUG_CONFIG="idekey=docker"                             \
-    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                          \
-    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                             \
-    -w "{$workingDirectory}"                                        \
-    {$image}                                                         \
+    -e XDEBUG_CONFIG="remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000"                  \
+    -e PHP_IDE_CONFIG="serverName=rd"                             \
+    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
+    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
+    -w "{$workingDirectory}"                                         \
+    {$image}                                                          \
     {$command}
 CMD
         ;
