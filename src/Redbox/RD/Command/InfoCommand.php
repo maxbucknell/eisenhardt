@@ -101,7 +101,10 @@ CMD
         $result = shell_exec($command);
 
         // Restore old width
-        $output->writeln("Setting terminal width to {$columnSize}");
+        $output->writeln(
+            "Setting terminal width to {$columnSize}",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
         shell_exec("stty columns {$columnSize}");
 
         $rows = explode("\n", $result);
