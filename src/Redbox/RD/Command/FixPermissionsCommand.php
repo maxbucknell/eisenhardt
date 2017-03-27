@@ -53,7 +53,7 @@ EOT
     ) {
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
-        $projectDir = $project->getInstallationDirectory;
+        $projectDir = $this->project->getInstallationDirectory;
         $output->writeln(
             "Found project in `{$projectDir}`.",
             OutputInterface::VERBOSITY_VERBOSE
