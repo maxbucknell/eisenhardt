@@ -24,6 +24,11 @@ use Redbox\RD\ProjectFactory;
 class RunCommand extends Command
 {
     /**
+     * PHP Version to use for Magento 2.
+     */
+    const PHP_VERSION = '7.0';
+
+    /**
      * @var Project
      */
     private $project;
@@ -49,6 +54,12 @@ class RunCommand extends Command
                         'd',
                         null,
                         'Run container as Debian rather than Alpine'
+                    ),
+                    new InputOption(
+                        'dry-run',
+                        '',
+                        null,
+                        'Outputs the command, but will not execute anything'
                     ),
                     new InputArgument(
                         'container_command',
@@ -88,11 +99,13 @@ EOT
             OutputInterface::VERBOSITY_VERBOSE
         );
 
+        $isDryRun = $input->getOption('dry-run');
 
         $tag = $this->getTag(
             $input->getOption('debug'),
             $input->getOption('use-debian')
         );
+
         $image = "redboxdigital/docker-console:{$tag}";
 
         $ipAddress = trim(`hostname -I | cut -d" " -f1`);
@@ -115,17 +128,20 @@ docker run                                           \
     -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
     -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
     -w "{$workingDirectory}"                                         \
-    {$image}                                                          \
+    {$image}                                                         \
     {$command}
 CMD
         ;
 
-        $output->writeln(
-            "Running: {$command}",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-
-        passthru($command);
+        if ($isDryRun) {
+            $output->writeln($command);
+        } else {
+            $output->writeln(
+                "Running: {$command}",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+            passthru($command);
+        }
     }
 
     /**
@@ -142,18 +158,20 @@ CMD
         bool $debug,
         bool $debian
     ) {
+        $v = static::PHP_VERSION;
+
         if ($debug && $debian) {
-            return '7.0-xdebug-debian';
+            return "{$v}-xdebug-debian";
         }
 
         if ($debug) {
-            return '7.0-xdebug';
+            return "{$v}-xdebug";
         }
 
         if ($debian) {
-            return '7.0-debian';
+            return "{$v}-debian";
         }
 
-        return '7.0';
+        return $v;
     }
 }
