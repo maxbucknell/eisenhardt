@@ -1,22 +1,20 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD\Command;
+namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
-use Redbox\RD\Project;
-use Redbox\RD\ProjectFactory;
+use MaxBucknell\Eisenhardt\Project;
+use MaxBucknell\Eisenhardt\ProjectFactory;
 
 /**
- * Get information about the Redbox Docker project.
+ * Get information about the Eisenhardt project.
  */
 class InfoCommand extends Command
 {
@@ -32,10 +30,10 @@ class InfoCommand extends Command
     {
         $this
             ->setName('info')
-            ->setDescription('Get information about Redbox Docker installation')
+            ->setDescription('Get information about Eisenhardt installation')
             ->setHelp(<<<EOT
 The <info>info</> command tells you IP addresses, port mappings, and
-enabled configuration inside the current Redbox Docker installation.
+enabled configuration inside the current Eisenhardt installation.
 EOT
             );
     }
@@ -84,10 +82,10 @@ EOT
 
         $command = <<<CMD
 docker-compose \
-  -f .rd/base.yml \
-  -f .rd/dev.yml \
-  -f .rd/appvolumes.yml \
-  -f .rd/dbvolumes.yml \
+  -f .eisenhardt/base.yml \
+  -f .eisenhardt/dev.yml \
+  -f .eisenhardt/appvolumes.yml \
+  -f .eisenhardt/dbvolumes.yml \
   -p {$projectName} \
   ps
 CMD

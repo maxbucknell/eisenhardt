@@ -1,11 +1,9 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD\Command;
+namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,13 +11,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Redbox\RD\Project;
-use Redbox\RD\ProjectFactory;
+use MaxBucknell\Eisenhardt\Project;
+use MaxBucknell\Eisenhardt\ProjectFactory;
 
 /**
- * Redbox Docker run command.
+ * Eisenhardt run command.
  *
- * Run an administrative command inside a Redbox Docker environment.
+ * Run an administrative command inside a Eisenhardt environment.
  */
 class RunCommand extends Command
 {
@@ -40,7 +38,7 @@ class RunCommand extends Command
     {
         $this
             ->setName('run')
-            ->setDescription('Run a command inside a Redbox Docker environment')
+            ->setDescription('Run a command inside a Eisenhardt environment')
             ->setDefinition(
                 new InputDefinition([
                     new InputOption(
@@ -72,7 +70,7 @@ class RunCommand extends Command
             ->setHelp(<<<EOT
 The <info>run</> command creates an ephemeral container based on the
 redbox-digital/docker-console image, mounts the volumes and joins the
-networks in the current Redbox Docker project, and executes the given
+networks in the current Eisenhardt project, and executes the given
 command.
 EOT
             );

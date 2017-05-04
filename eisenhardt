@@ -1,7 +1,7 @@
 #! /usr/bin/env php
 <?php
 
-use Redbox\RD\Application;
+use MaxBucknell\Eisenhardt\Application;
 
 function includeIfExists($file)
 {
@@ -13,5 +13,5 @@ if ((!$loader = includeIfExists(__DIR__.'/vendor/autoload.php')) && (!$loader = 
     exit(1);
 }
 
-$app = new Application('Redbox Docker');
+$app = new Application('Eisenhardt');
 $app->run();

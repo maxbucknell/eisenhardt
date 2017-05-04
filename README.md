@@ -1,15 +1,15 @@
-# Redbox Docker
+# Eisenhardt
 
 A "batteries not included" best practice development environment for Magento 2,
 based on Docker.
 
 By this, we mean that this only contains the server configuration, and does no
 magic around installing Magento. We found that we needed a best practice
-development environment for projects we already had. As such, Redbox Docker is
+development environment for projects we already had. As such, Eisenhardt is
 not picky about how your projects are configured. You just need to set it up in
 the root of your project.
 
-Redbox Docker is a very thin wrapper around Docker Compose.
+Eisenhardt is a very thin wrapper around Docker Compose.
 
 ## Installation
 
@@ -21,16 +21,16 @@ Redbox Docker is a very thin wrapper around Docker Compose.
 Install via Composer! (Packagist entry is coming)
 
 ```bash
-composer global config repositories.rd vcs https://github.com/maxbucknell/rd.git
+composer global config repositories.eisenhardt vcs https://github.com/maxbucknell/eisenhardt.git
 composer global config "minimum-stability" "dev"
 composer global config "prefer-stable" "true"
-composer global require redbox/rd
+composer global require maxbucknell/eisenhardt
 ```
 
 ## Getting Started
 
 This will walk you through setting up a clean installation of Magento. To use
-Redbox Docker on an existing project, see the section below on that topic.
+Eisenhardt on an existing project, see the section below on that topic.
 
 First of all, create a Magento 2 project
 
@@ -39,33 +39,33 @@ composer create-project \
   --repository-url=https://repo.magento.com/ \
   magento/project-community-edition:~2.1.0 \
   --no-install \
-  test-rd
+  test-eisenhardt
 ```
 
-This creates a Magento 2 base project in the `test-rd` directory. Switch to it,
-and set up Redbox Docker:
+This creates a Magento 2 base project in the `test-eisenhardt` directory. Switch to it,
+and set up Eisenhardt:
 
 ```bash
-rd init
-rd start
+eisenhardt init
+eisenhardt start
 ```
 
 Now we can begin to install Magento. First step is the dependencies:
 
 ```bash
-rd run -- composer install
+eisenhardt run -- composer install
 ```
 
 Now is probably a good time to make sure the permissions are correct:
 
 ```bash
-rd fix-permissions
+eisenhardt fix-permissions
 ```
 
 And make sure the database exists:
 
 ```bash
-rd run -- mysql -hmagento_database -uroot -proot
+eisenhardt run -- mysql -hmagento_database -uroot -proot
 MySQL [(none)]> create database showoff;
 ```
 
@@ -73,21 +73,21 @@ And then the installation. The following command will do it all, but feel free
 to change anything if you need to.
 
 ```bash
-rd run -- n98-magerun2 setup:install \
+eisenhardt run -- n98-magerun2 setup:install \
   --backend-frontname="admin" \
   --db-host="magento_database" \
   --db-name="showoff" \
   --db-user="root" \
   --db-password="root" \
-  --base-url="http://test-rd.loc/" \
+  --base-url="http://test-eisenhardt.loc/" \
   --language="en_US" \
   --timezone="UTC" \
   --currency="EUR" \
-  --admin-user="redbox.digital" \
+  --admin-user="magento.admin" \
   --admin-password="password123" \
-  --admin-email="redbox.digital@example.com" \
-  --admin-firstname="Redbox" \
-  --admin-lastname="Digital"
+  --admin-email="magento.admin@example.com" \
+  --admin-firstname="Magento" \
+  --admin-lastname="Admin"
 ```
 
 If you are running Enterprise, you can configure the Message Queue framework
@@ -105,67 +105,67 @@ Now there are some final setup tasks, which are optional but encouraged to get
 a quick environment:
 
 ```bash
-rd run -d -- n98-magerun2 setup:static-content:deploy
-rd run -- n98-magerun2 cache:flush
-rd run -- n98-magerun2 setup:di:compile
+eisenhardt run -d -- n98-magerun2 setup:static-content:deploy
+eisenhardt run -- n98-magerun2 cache:flush
+eisenhardt run -- n98-magerun2 setup:di:compile
 ```
 
 After this, your Magento 2 installation should be ready to use, but you won't
-be able to access it. To do this, run `rd info`, and copy the IP address of the
+be able to access it. To do this, run `eisenhardt info`, and copy the IP address of the
 `webserver` container. Add an entry to your hosts file:
 
 ```
-<ip_address> test-rd.loc
+<ip_address> test-eisenhardt.loc
 ```
 
-If you visit `test-rd.loc/` in your browser, you should see the home page. Log
-into the admin with `redbox.digital` and `password123`.
+If you visit `test-eisenhardt.loc/` in your browser, you should see the home page. Log
+into the admin with `magento.admin` and `password123`.
 
 To see more details and available options, please check out the rest of the
 documentation.
 
 ```bash
-rd init
-rd start
-rd info
+eisenhardt init
+eisenhardt start
+eisenhardt info
 # Edit your /etc/hosts file to point your base URL to the IP address of the webserver
 # Edit your app/etc/env.php to point your database at `magento_database`.
-rd run -- n98-magerun2 db:import <path/to/database.sql>
+eisenhardt run -- n98-magerun2 db:import <path/to/database.sql>
 ```
 
 ## Command Reference
 
-### `rd init`
+### `eisenhardt init`
 
-Bootstrap a new Redbox Docker project, or update an existing one.
+Bootstrap a new Eisenhardt project, or update an existing one.
 
 This command should be run from the root of your Magento 2 installation.
 
 
-### `rd start`
+### `eisenhardt start`
 
-Start the Redbox Docker environment, and make it ready for use.
+Start the Eisenhardt environment, and make it ready for use.
 
-This command searches up its directory tree for a Redbox Docker environment, so
+This command searches up its directory tree for a Eisenhardt environment, so
 can be run from any directory inside your Magento 2 installation.
 
 #### Options
 
 | Flag                 | Description |
 | :------------------- | :---------- |
-| `-p`, `--map-ports`  | Map ports of Redbox Docker environment to host. By default, this does not happen, and Redbox Docker containers are accessible only from their IP addresses. Use this if you don't like editing your hosts file, or if you are running Docker on a remote machine, including a Mac or Windows computer. |
-| `-d`, `--use-debian` | Redbox Docker uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
+| `-p`, `--map-ports`  | Map ports of Eisenhardt environment to host. By default, this does not happen, and Eisenhardt containers are accessible only from their IP addresses. Use this if you don't like editing your hosts file, or if you are running Docker on a remote machine, including a Mac or Windows computer. |
+| `-d`, `--use-debian` | Eisenhardt uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
 
-### `rd info`
+### `eisenhardt info`
 
-Print some useful information about the Redbox Docker environment.
+Print some useful information about the Eisenhardt environment.
 
-This command searches up its directory tree for a Redbox Docker environment, so
+This command searches up its directory tree for a Eisenhardt environment, so
 can be run from any directory inside your Magento 2 installation.
 
-### `rd run`
+### `eisenhardt run`
 
-Run a command inside the Redbox Docker environment.
+Run a command inside the Eisenhardt environment.
 
 There are many administrative tasks that require integration with the Magento
 installation. This includes (but is not limited to):
@@ -178,11 +178,11 @@ You can do this by `exec`ing a command inside the PHP container, but it is not
 the best idea. That will force you to install various command line tools inside
 the app container.
 
-`rd run` circumvents this by creating a new container, and injecting it into the
-Redbox Docker environment's network, and mounting the volumes from the
+`eisenhardt run` circumvents this by creating a new container, and injecting it into the
+Eisenhardt environment's network, and mounting the volumes from the
 appserver. It then runs an arbitrary command, and removes itself.
 
-The container used is `redboxdigital/docker-console`, and has an identical PHP
+The container used is `maxbucknell/console`, and has an identical PHP
 configuration to the appservers. Along with that, it also has a variety of
 useful tools preinstalled, including:
 
@@ -199,12 +199,12 @@ particular, Git configuration (including aliases), as well as SSH sockets, and
 Composer caches.
 
 If you are running a command that takes flags as arguments, these flags will be
-interpreted by the `rd` utility. To avoid this, you can quote your command, or
+interpreted by the `eisenhardt` utility. To avoid this, you can quote your command, or
 place your command after a `--`, like so:
 
 ```bash
-# Prints the Magerun help, not rd help
-rd run -- n98-magerun2 --help
+# Prints the Magerun help, not eisenhardt help
+eisenhardt run -- n98-magerun2 --help
 ```
 
 See the page of that image for more details.
@@ -214,16 +214,16 @@ See the page of that image for more details.
 | Flag                 | Description |
 | :------------------- | :---------- |
 | `-x`, `--debug`      | Run the container with Xdebug installed and enabled. If you want to debug a cron task, this is the way to do it. |
-| `-d`, `--use-debian` | Redbox Docker uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
+| `-d`, `--use-debian` | Eisenhardt uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
 
-### `rd fix-permissions`
+### `eisenhardt fix-permissions`
 
 Set permissions to something approaching correct for a Magento 2 installation.
 
 By correct, we mean the following:
 
 *	All files and folders are owned by the host user (that's you!)
-*	All files and folders have the group `rd-www (10118)
+*	All files and folders have the group `eisenhardt-www (10118)
 *	All files have permissions `744` (`rwxr--r--`)
 *	All folders have permissions `755` (`rwxr-xr-x`)
 *	All folders are set to "sticky", which means that new files created
@@ -236,31 +236,31 @@ have `core.fileMode` set to `true` in your Git configuration, this can generate
 changes on your files. You can either commit these (they're good permissions,
 brent), or you can tell Git not to track permissions.
 
-### `rd stop`
+### `eisenhardt stop`
 
-Stop the Redbox Docker environment, as if you turned off your servers.
+Stop the Eisenhardt environment, as if you turned off your servers.
 
 ## Configuration for Existing Environments
 
-If you are setting up an existing Magento 2 installation with Redbox Docker, the
+If you are setting up an existing Magento 2 installation with Eisenhardt, the
 only thing you need to change is `env.php`.
 
-Start off by running `rd init` in the project root, and then `rd start`. You
+Start off by running `eisenhardt init` in the project root, and then `eisenhardt start`. You
 will need to add a hosts entry as per the Getting Started instructions. Then set
 the `env.php` parameters correctly.
 
-The following `env.php` should work on pretty much all Redbox Docker
+The following `env.php` should work on pretty much all Eisenhardt
 installations. Feel free to copy verbatim, or take the relevant parts.
 
 Once done, the database will need to be imported. Create the database first,
-with `rd run -- n98-magerun2 db:create`, and then import from a dump with:
+with `eisenhardt run -- n98-magerun2 db:create`, and then import from a dump with:
 
 ```bash
 # path/to/db.sql needs to be within your project root or Docker will not find it.
-rd run -- n98-magerun2 db:import path/to/db.sql
+eisenhardt run -- n98-magerun2 db:import path/to/db.sql
 ```
 
-A quick cache flush with `rd run -- n98-magerun2 c:f` and you should be good to
+A quick cache flush with `eisenhardt run -- n98-magerun2 c:f` and you should be good to
 go.
 
 >	Note: that we have queue configuration in here, for the Enterprise
@@ -427,7 +427,7 @@ everything else is shared, this switch is totally transparent.
 
 #### Debugging Console Commands
 
-To debug a console command, you must pass the `-x` flag to `rd run`. This will
+To debug a console command, you must pass the `-x` flag to `eisenhardt run`. This will
 run a container with Xdebug, and set the relevent environment variable to
 trigger XDebug with an IDE key of `"docker"`.
 
@@ -479,22 +479,22 @@ Docker container.
 
 ### Mail
 
-It is common to want to test emails locally. Redbox Docker comes with MailHog,
+It is common to want to test emails locally. Eisenhardt comes with MailHog,
 which catches all emails that are sent to any email address, and displays them
 in a web interface.
 
-`rd info` will show you the IP address of this container. You can either hit
+`eisenhardt info` will show you the IP address of this container. You can either hit
 that up directly, or add a subdomain for it in your hosts file. If you are using
-Redbox Docker with the ports mapped, this dashboard is mounted at port `:1080`.
+Eisenhardt with the ports mapped, this dashboard is mounted at port `:1080`.
 
-In addition to this, all emails are saved in the `.rd/mail` volume, as a record
+In addition to this, all emails are saved in the `.eisenhardt/mail` volume, as a record
 and as a convenient way of checking sources directly.
 
 ## Technical Details
 
-### `.rd` Directory
+### `.eisenhardt` Directory
 
-When you run `rd init`, it creates a directory at the root of your Magento
+When you run `eisenhardt init`, it creates a directory at the root of your Magento
 2 installation. This contains some volumes, the various configuration files for
 Docker Compose, and some server configuration files.
 
@@ -504,17 +504,17 @@ and shared development environment.
 
 While it's possible to edit these files (perhaps your MySQL configuration needs
 to be tweaked because you have unusual demands), please bear in mind that
-updating the Redbox Docker installation by re-running `rd init` will not respect
+updating the Eisenhardt installation by re-running `eisenhardt init` will not respect
 your changes.
 
 ### Container Inventory
 
-Redbox Docker comes with a variety of containers, and they all do different
+Eisenhardt comes with a variety of containers, and they all do different
 things. Here is a full list:
 
 *	`magento_webserver` (`nginx:alpine`): The container your browser will visit.
-*	`magento_appserver` (`redboxdigital/php:7.0`): Usually the container running Magento.
-*	`magento_appserver_debug` (`redboxdigital/php:7.0-xdebug`): Like `magento_appserver`, but with Xdebug.
+*	`magento_appserver` (`maxbucknell/php:7.0`): Usually the container running Magento.
+*	`magento_appserver_debug` (`maxbucknell/php:7.0-xdebug`): Like `magento_appserver`, but with Xdebug.
 *	`magento_database` (`percona:5.6`): The database.
 *	`magento_cache` (`redis:alpine`): Cache backend.
 *	`magento_fpc` (`redis:alpine`): FPC storage backend.
@@ -529,7 +529,7 @@ There are also two data-only containers, used for mounting volumes:
 
 ### Docker Compose Files
 
-Redbox Docker is split into many different YAML files. This allows the
+Eisenhardt is split into many different YAML files. This allows the
 environment to be started in a variety of different configurations. For example,
 the port mappings are configured in a different file (`ports.yml`), so the
 environment can be started with or without port mappings.
@@ -550,7 +550,7 @@ needs to have a name, which can be specified by the `-p` parameter, but will be
 be generated from the name of the directory containing the `*.yml` file by
 default.
 
-Redbox Docker sets a custom name for its project based on the name of the
+Eisenhardt sets a custom name for its project based on the name of the
 directory of the Magento project. If left to its own devices, Docker Compose 
 
 ### Permissions
@@ -562,15 +562,15 @@ committing them, and deleting them.
 
 A simple `rm -rf pub/static` becomes problematic.
 
-Because of this, Redbox Docker has all of its servers configured to run as
-a non-privileged user. The actual user ID does not matter to Redbox Docker,
-because all files should be owned by your host user. Redbox Docker uses group
+Because of this, Eisenhardt has all of its servers configured to run as
+a non-privileged user. The actual user ID does not matter to Eisenhardt,
+because all files should be owned by your host user. Eisenhardt uses group
 permissions to do its thing.
 
 Nginx runs as its typical user, `nginx:nginx`. This has no ability to change any
 files, but all files should be set to world readable.
 
-PHP runs as a custom user `rd-www:rd-www` (`10118:10118`). This is a custom user
+PHP runs as a custom user `eisenhardt-www:eisenhardt-www` (`10118:10118`). This is a custom user
 (to unify UIDs between Alpine and Debian). The group of all files should be set
 to this, because `pub/` and `var/` are set to group writable. PHP only has read
 permissions on everything else, since that's all it needs.
@@ -578,20 +578,20 @@ permissions on everything else, since that's all it needs.
 The other services to do not interact with the Magento 2 installation at a file
 level, so their credentials are less important.
 
-When running `rd run`, a Docker container is created. Your host's `/etc/passwd`
+When running `eisenhardt run`, a Docker container is created. Your host's `/etc/passwd`
 is mapped into the container, and it is configured to run with your user's ID.
-This means that running something like `rd run -- whoami` will return your
+This means that running something like `eisenhardt run -- whoami` will return your
 username. However, we also set the user inside that container to have the
-primary group of `10118`, or `rd-www`. This means that all files created inside
-an invocation of `rd run` will maintain consistent permissions.
+primary group of `10118`, or `eisenhardt-www`. This means that all files created inside
+an invocation of `eisenhardt run` will maintain consistent permissions.
 
-Redbox Docker comes with a command, `rd fix-permissions` to set permissions as
+Eisenhardt comes with a command, `eisenhardt fix-permissions` to set permissions as
 described above. It is unusual to have permissions troubles following this
 pattern.
 
 ### Debian
 
-Redbox Docker is based on Alpine Linux. Having small containers is a good idea
+Eisenhardt is based on Alpine Linux. Having small containers is a good idea
 for a few different reasons, but mostly it's just good fun and takes up
 a laughably small amount of space on my computer.
 
@@ -600,12 +600,13 @@ described in this Magento issue. It can be fixed as described in the ticket, but
 if you don't want to do that, or just don't feel comfortable with Alpine, Debian
 based containers are totally supported.
 
-To run the Magento application with Debian, pass the `--use-debian` flag to `rd
-start`. To run a one-off console command (such as `setup:static-content:deploy`)
-on a Debian container, pass `--use-debian` as a flag to `rd run`.
+To run the Magento application with Debian, pass the `--use-debian` flag to
+`eisenhardt start`. To run a one-off console command (such as
+`setup:static-content:deploy`) on a Debian container, pass `--use-debian` as
+a flag to `eisenhardt run`.
 
-These will tell Redbox Docker to use the special Debian versions of the
-`redboxdigital/php` images.
+These will tell Eisenhardt to use the special Debian versions of the
+`maxbucknel/php` images.
 
 ## To Do
 
@@ -614,7 +615,7 @@ chance to yet.
 
 ### Varnish
 
-Currently, Redbox Docker is using Redis as the back end to Magento's shim of
+Currently, Eisenhardt is using Redis as the back end to Magento's shim of
 Varnish for FPC. This is not ideal.
 
 #### Docker Image
@@ -629,14 +630,14 @@ a Dockerfile pretty quickly.
 #### Debugging
 
 The VCL that Magento generates is pretty standard, and can be shipped with
-Redbox Docker. However, some customisations will need to be made in development
+Eisenhardt. However, some customisations will need to be made in development
 mode so that XDebug can be used through it.
 
 #### Easy to Disable
 
 It's entirely possible that a developer might not want to use Varnish. It can
 probably be achieved just by turning off Full Page Cache, but we should
-investigate making it easy to run Redbox Docker without Varnish. This will have
+investigate making it easy to run Eisenhardt without Varnish. This will have
 a knock on impact to the Nginx configuration.
 
 ### TLS
@@ -645,12 +646,12 @@ Right now, everything runs over simple HTTP. While HTTPS is not a requirement
 for local development, it's a good idea to run with it tested so you can verify
 that you won't have issues with things like mixed assets when you deploy.
 
-We need some way of generating certificates through `rd run`, and making Nginx
+We need some way of generating certificates through `eisenhardt run`, and making Nginx
 support this. More work is needed.
 
 ### Enterprise Edition
 
-Redbox Docker was designed to work with Enterprise Edition by default, since
+Eisenhardt was designed to work with Enterprise Edition by default, since
 that's what we use most of the time. It would be nice to make this a flag, and
 remove unnecessary containers for Community Edition.
 

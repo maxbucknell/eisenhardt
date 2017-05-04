@@ -1,22 +1,22 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD;
+namespace MaxBucknell\Eisenhardt;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
- * Object representing a Redbox Docker project.
+ * Object representing a Eisenhardt project.
  *
  * Encapsulates knowledge about its location.
  */
 class Project
 {
+    const DIRECTORY_NAME = '.eisenhardt';
+
     /**
      * @var string
      */
@@ -29,7 +29,7 @@ class Project
 
     /**
      * @param string $rootDirectory
-     *     Base directory of Redbox Docker installation.
+     *     Base directory of Eisenhardt installation.
      */
     public function __construct(
         string $installationDirectory
@@ -37,15 +37,15 @@ class Project
         $this->installationDirectory = $installationDirectory;
         $this->filesystem = new Filesystem();
 
-        if (!file_exists($this->getRDDirectory())) {
+        if (!file_exists($this->getEisenhardtDirectory())) {
             throw new FileNotFoundException(
-                "Could not find `.rd/` directory inside {$installationDirectory}"
+                "Could not find `" . static::DIRECTORY_NAME . "/` directory inside {$installationDirectory}"
             );
         }
     }
 
     /**
-     * Return the installation directory of Redbox Docker.
+     * Return the installation directory of Eisenhardt.
      *
      * @return string
      */
@@ -55,15 +55,15 @@ class Project
     }
 
     /**
-     * Return the Redbox Docker project configuration directory.
+     * Return the Eisenhardt project configuration directory.
      *
      * @return string
      */
-    public function getRDDirectory()
+    public function getEisenhardtDirectory()
     {
         $installationDirectory = $this->installationDirectory;
 
-        return "{$installationDirectory}/.rd";
+        return "{$installationDirectory}/" . static::DIRECTORY_NAME;
     }
 
     /**

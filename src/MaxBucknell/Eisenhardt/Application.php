@@ -1,22 +1,20 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD;
+namespace MaxBucknell\Eisenhardt;
 
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Redbox\RD\Command\InitCommand;
-use Redbox\RD\Command\RunCommand;
-use Redbox\RD\Command\StartCommand;
-use Redbox\RD\Command\StopCommand;
-use Redbox\RD\Command\InfoCommand;
-use Redbox\RD\Command\FixPermissionsCommand;
+use MaxBucknell\Eisenhardt\Command\InitCommand;
+use MaxBucknell\Eisenhardt\Command\RunCommand;
+use MaxBucknell\Eisenhardt\Command\StartCommand;
+use MaxBucknell\Eisenhardt\Command\StopCommand;
+use MaxBucknell\Eisenhardt\Command\InfoCommand;
+use MaxBucknell\Eisenhardt\Command\FixPermissionsCommand;
 
 /**
  * Main Application.
@@ -26,7 +24,7 @@ class Application extends ConsoleApplication
     public function __construct()
     {
         parent::__construct(
-            'Redbox Docker',
+            'Eisenhardt',
             '1.0.0-dev'
         );
 

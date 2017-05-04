@@ -1,23 +1,21 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD;
+namespace MaxBucknell\Eisenhardt;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
- * Factory for Redbox Docker projects.
+ * Factory for Eisenhardt projects.
  */
 class ProjectFactory
 {
     /**
      * Get a Project object based on the current worknig directory.
      *
-     * By searching inside parents successively for a `.rd` directory,
+     * By searching inside parents successively for a `.eisenhardt` directory,
      * we can locate a project root. If we do not find one, then we just
      * give up and throw an exception.
      *
@@ -27,7 +25,7 @@ class ProjectFactory
     public static function findFromWorkingDirectory()
     {
         $workingDirectory = getcwd();
-        $installationDirectory = static::findInParent('.rd', $workingDirectory);
+        $installationDirectory = static::findInParent(Project::DIRECTORY_NAME, $workingDirectory);
 
         return new Project($installationDirectory);
     }

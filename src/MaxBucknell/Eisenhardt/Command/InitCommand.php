@@ -1,20 +1,18 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD\Command;
+namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Redbox Docker initialization command.
+ * Eisenhardt initialization command.
  *
- * Initializes a new Redbox Docker environment in the current project
+ * Initializes a new Eisenhardt environment in the current project
  * directory.
  */
 class InitCommand extends Command
@@ -26,10 +24,10 @@ class InitCommand extends Command
     {
         $this
             ->setName('init')
-            ->setDescription('Initialize a new Redbox Docker environment')
+            ->setDescription('Initialize a new Eisenhardt environment')
             ->setHelp(<<<EOT
 The <info>init</> command creates a directory inside your project root
-called <info>.rd/</>, which contains various Docker related config.
+called <info>.eisenhardt/</>, which contains various Docker related config.
 EOT
             );
     }
@@ -43,7 +41,7 @@ EOT
     ) {
         $cwd = getcwd();
         $location = __DIR__;
-        $destination = "{$cwd}/.rd";
+        $destination = "{$cwd}/.eisenhardt";
         $src = "{$location}/../../../../project-template";
         $command = "cp -r {$src} {$destination}";
 
@@ -53,6 +51,6 @@ EOT
         );
         shell_exec($command);
 
-        $output->writeln("Initializing Redbox Docker project in <info>{$destination}</>");
+        $output->writeln("Initializing Eisenhardt project in <info>{$destination}</>");
     }
 }

@@ -7,13 +7,13 @@ services:
 
   magento_appserver:
     volumes:
-      - "./servers/mailhog.rd.php.ini:/usr/local/etc/php/conf.d/mailhog.rd.php.ini"
+      - "./servers/mailhog.eisenhardt.php.ini:/usr/local/etc/php/conf.d/mailhog.eisenhardt.php.ini"
       - "./servers/rd.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
     depends_on:
       - "magento_mail"
 
   magento_appserver_debug:
-    image: "redboxdigital/php:7.0-xdebug"
+    image: "maxbucknell/php:7.0-xdebug"
     networks:
       - "magento"
     volumes_from:

@@ -1,17 +1,17 @@
 {
-    "name": "redbox/rd",
+    "name": "maxbucknell/eisenhardt",
     "description": "Batteries not included Docker environment for Magento 2.",
-    "keywords": [ "redbox", "docker", "magento", "magento-2" ],
+    "keywords": [ "magento", "magento2", "docker", "docker-compose" ],
     "license": "MIT",
     "authors": [
         {
             "name": "Max Bucknell",
-            "email": "max.bucknell@redboxdigital.com"
+            "email": "me@maxbucknell.com"
         }
     ],
     "autoload": {
         "psr-4": {
-            "Redbox\\": "src/Redbox/"
+            "MaxBucknell\\": "src/MaxBucknell/"
         }
     },
     "require": {
@@ -19,7 +19,7 @@
         "symfony/filesystem": "^3.2"
     },
     "bin": [
-        "rd"
+        "eisenhardt"
     ],
     "minimum-stability": "stable"
 }

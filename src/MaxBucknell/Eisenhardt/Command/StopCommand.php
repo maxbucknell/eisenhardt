@@ -1,22 +1,20 @@
 <?php
 /**
- * This file is part of the redbox/rd package.
- *
- * @copyright Copyright 2017 Redbox Digital. All rights reserved.
+ * This file is part of the maxbucknell/eisenhardt package.
  */
 
-namespace Redbox\RD\Command;
+namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Redbox\RD\Project;
-use Redbox\RD\ProjectFactory;
+use MaxBucknell\Eisenhardt\Project;
+use MaxBucknell\Eisenhardt\ProjectFactory;
 
 /**
- * Redbox Docker start command
+ * Eisenhardt start command
  *
- * Starts the servers of a Redbox Docker installation.
+ * Starts the servers of a Eisenhardt installation.
  */
 class StopCommand extends Command
 {
@@ -32,9 +30,9 @@ class StopCommand extends Command
     {
         $this
             ->setName('stop')
-            ->setDescription('Stop the Redbox Docker project')
+            ->setDescription('Stop the Eisenhardt project')
             ->setHelp(<<<EOT
-The <info>stop</> command starts the Redbox Docker environment, as if
+The <info>stop</> command starts the Eisenhardt environment, as if
 you turned off your servers.
 EOT
             );
@@ -60,10 +58,10 @@ EOT
 
         $command = <<<CMD
 docker-compose \
-  -f .rd/base.yml \
-  -f .rd/dev.yml \
-  -f .rd/appvolumes.yml \
-  -f .rd/dbvolumes.yml \
+  -f .eisenhardt/base.yml \
+  -f .eisenhardt/dev.yml \
+  -f .eisenhardt/appvolumes.yml \
+  -f .eisenhardt/dbvolumes.yml \
   -p {$projectName} \
   stop
 CMD

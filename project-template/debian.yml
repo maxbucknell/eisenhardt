@@ -2,4 +2,4 @@ version: '2'
 
 services:
   magento_appserver:
-    image: "redboxdigital/php:7.0-debian"
+    image: "maxbucknell/php:7.0-debian"
