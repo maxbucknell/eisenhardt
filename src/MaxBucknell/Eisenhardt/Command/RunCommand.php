@@ -48,12 +48,6 @@ class RunCommand extends Command
                         'Run container with Xdebug configured'
                     ),
                     new InputOption(
-                        'use-debian',
-                        'd',
-                        null,
-                        'Run container as Debian rather than Alpine'
-                    ),
-                    new InputOption(
                         'dry-run',
                         '',
                         null,
@@ -99,10 +93,7 @@ EOT
 
         $isDryRun = $input->getOption('dry-run');
 
-        $tag = $this->getTag(
-            $input->getOption('debug'),
-            $input->getOption('use-debian')
-        );
+        $tag = $this->getTag($input->getOption('debug'));
 
         $image = "redboxdigital/docker-console:{$tag}";
 
@@ -149,25 +140,15 @@ CMD
      * be used.
      *
      * @param bool $debug Use Xdebug.
-     * @param bool $debian Use Debian.
      * @return string
      */
     private function getTag(
-        bool $debug,
-        bool $debian
+        bool $debug
     ) {
         $v = static::PHP_VERSION;
 
-        if ($debug && $debian) {
-            return "{$v}-xdebug-debian";
-        }
-
         if ($debug) {
             return "{$v}-xdebug";
-        }
-
-        if ($debian) {
-            return "{$v}-debian";
         }
 
         return $v;

@@ -1,5 +1,0 @@
-version: '2'
-
-services:
-  magento_appserver:
-    image: "maxbucknell/php:7.0-debian"

@@ -28,7 +28,7 @@ class Project
     private $filesystem;
 
     /**
-     * @param string $rootDirectory
+     * @param string $installationDirectory
      *     Base directory of Eisenhardt installation.
      */
     public function __construct(

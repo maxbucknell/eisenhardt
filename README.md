@@ -154,7 +154,6 @@ can be run from any directory inside your Magento 2 installation.
 | Flag                 | Description |
 | :------------------- | :---------- |
 | `-p`, `--map-ports`  | Map ports of Eisenhardt environment to host. By default, this does not happen, and Eisenhardt containers are accessible only from their IP addresses. Use this if you don't like editing your hosts file, or if you are running Docker on a remote machine, including a Mac or Windows computer. |
-| `-d`, `--use-debian` | Eisenhardt uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
 
 ### `eisenhardt info`
 
@@ -214,7 +213,6 @@ See the page of that image for more details.
 | Flag                 | Description |
 | :------------------- | :---------- |
 | `-x`, `--debug`      | Run the container with Xdebug installed and enabled. If you want to debug a cron task, this is the way to do it. |
-| `-d`, `--use-debian` | Eisenhardt uses Alpine Linux by default. There are some compatibility issues. If you don't want to think about this, use Debian. |
 
 ### `eisenhardt fix-permissions`
 
@@ -538,8 +536,6 @@ environment can be started with or without port mappings.
 *	`dev.yml`: Services required for development, including `magento_appserver_debug` and `magento_mail`.
 *	`appvolumes.yml`: `magento_appdata` plus `volumes_from` directives.
 *	`dbvolumes.yml`: `magento_databasedata` plus `volumes_from` directives.
-*	`debian.yml`: Switches `magento_appserver` to use a Debian based image.
-*	`debian-dev.yml`: Switches `magento_appserver_debug` to use a Debian based image.
 *	`ports.yml`: Map ports `:80`, `:443`, `:3306`, `:15672` (RabbitMQ), and `:1080` (Mailhog).
 
 ### Project Name
@@ -588,25 +584,6 @@ an invocation of `eisenhardt run` will maintain consistent permissions.
 Eisenhardt comes with a command, `eisenhardt fix-permissions` to set permissions as
 described above. It is unusual to have permissions troubles following this
 pattern.
-
-### Debian
-
-Eisenhardt is based on Alpine Linux. Having small containers is a good idea
-for a few different reasons, but mostly it's just good fun and takes up
-a laughably small amount of space on my computer.
-
-However, there are a few issues with PHP compatibility. The one I hit is
-described in this Magento issue. It can be fixed as described in the ticket, but
-if you don't want to do that, or just don't feel comfortable with Alpine, Debian
-based containers are totally supported.
-
-To run the Magento application with Debian, pass the `--use-debian` flag to
-`eisenhardt start`. To run a one-off console command (such as
-`setup:static-content:deploy`) on a Debian container, pass `--use-debian` as
-a flag to `eisenhardt run`.
-
-These will tell Eisenhardt to use the special Debian versions of the
-`maxbucknel/php` images.
 
 ## To Do
 

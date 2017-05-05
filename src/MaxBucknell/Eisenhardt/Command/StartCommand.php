@@ -40,12 +40,6 @@ class StartCommand extends Command
                         'p',
                         null,
                         'Map important ports to your host'
-                    ),
-                    new InputOption(
-                        'use-debian',
-                        'd',
-                        null,
-                        'Run appservers as Debian rather than Alpine'
                     )
                 ])
             )
@@ -66,10 +60,8 @@ EOT
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
         $p = $input->getOption('map-ports');
-        $d = $input->getOption('use-debian');
 
         $portInclude = $p ? '-f .eisenhardt/ports.yml' : '';
-        $debianInclude = $d ? '-f .eisenhardt/debian.yml -f .eisenhardt/debian-dev.yml' : '';
         $workingDirectory = $this->project->getInstallationDirectory();
         $output->writeln(
             "Found project in `{$workingDirectory}`.",
@@ -81,14 +73,13 @@ EOT
 
         $output->writeln('Starting...');
         $command = <<<CMD
-docker-compose       \
-  -f .eisenhardt/base.yml     \
-  -f .eisenhardt/dev.yml       \
-  {$debianInclude}      \
+docker-compose                \
+  -f .eisenhardt/base.yml      \
+  -f .eisenhardt/dev.yml        \
   -f .eisenhardt/appvolumes.yml  \
   -f .eisenhardt/dbvolumes.yml    \
-  {$portInclude}           \
-  -p {$projectName}         \
+  {$portInclude}                   \
+  -p {$projectName}                 \
   up -d --force-recreate 2> /dev/null
 CMD
         ;
