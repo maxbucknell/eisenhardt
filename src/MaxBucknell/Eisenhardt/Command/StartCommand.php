@@ -90,6 +90,6 @@ CMD
         );
         passthru($command);
         $output->writeln('All containers started:');
-        $output->writeln('<info>Run <fg=yellow>rd info</> to view IP addresses and container statuses.</>');
+        $output->writeln('<info>Run <fg=yellow>eisenhardt info</> to view IP addresses and container statuses.</>');
     }
 }
