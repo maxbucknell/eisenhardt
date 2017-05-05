@@ -51,7 +51,7 @@ EOT
     ) {
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
-        $projectDir = $this->project->getInstallationDirectory;
+        $projectDir = $this->project->getInstallationDirectory();
         $output->writeln(
             "Found project in `{$projectDir}`.",
             OutputInterface::VERBOSITY_VERBOSE
@@ -124,7 +124,8 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find pub/ -not -path './.eisenhardt/*' -exec chmod g+w {} \;
+  find pub/ -not -path './
+  .eisenhardt/*' -exec chmod g+w {} \;
 CMD
             ,
             '<info>Making <fg=yellow>bin/magento</> executable</>' => <<<CMD

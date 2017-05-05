@@ -6,7 +6,7 @@ services:
     networks:
       - "magento"
     volumes:
-      - "./servers/rd.nginx.conf:/etc/nginx/nginx.conf"
+      - "./servers/eisenhardt.nginx.conf:/etc/nginx/nginx.conf"
     depends_on:
       - "magento_appserver"
 
@@ -15,8 +15,8 @@ services:
     networks:
       - "magento"
     volumes:
-      - "./servers/rd.php.ini:/usr/local/etc/php/php.ini"
-      - "./servers/rd.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
+      - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"
+      - "./servers/eisenhardt.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
     depends_on:
       - "magento_database"
       - "magento_cache"
@@ -29,7 +29,7 @@ services:
     networks:
       - "magento"
     volumes:
-      - "./servers/rd.my.cnf:/etc/mysql/my.cnf"
+      - "./servers/eisenhardt.my.cnf:/etc/mysql/my.cnf"
     environment:
       MYSQL_ROOT_PASSWORD: "root"
 

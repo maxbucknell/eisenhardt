@@ -95,7 +95,7 @@ EOT
 
         $tag = $this->getTag($input->getOption('debug'));
 
-        $image = "redboxdigital/docker-console:{$tag}";
+        $image = "maxbucknell/php:{$tag}";
 
         $ipAddress = trim(`hostname -I | cut -d" " -f1`);
 
@@ -108,16 +108,16 @@ docker run                                           \
     -u "\$(id -u):10118"                                  \
     -v "/etc/passwd:/etc/passwd"                           \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
-    -v "\$HOME/.composer:\$HOME/.composer"                   \
+    -v "\$HOME/.config/composer:\$HOME/.composer"            \
     -v "\$HOME/.npm:\$HOME/.npm"                              \
     -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
     -e COMPOSER_HOME="\$HOME/.composer"                         \
-    -e XDEBUG_CONFIG="remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000"                  \
+    -e XDEBUG_CONFIG="remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000" \
     -e PHP_IDE_CONFIG="serverName=rd"                             \
     -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
     -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
     -w "{$workingDirectory}"                                         \
-    {$image}                                                         \
+    {$image}                                                          \
     {$command}
 CMD
         ;
@@ -148,9 +148,9 @@ CMD
         $v = static::PHP_VERSION;
 
         if ($debug) {
-            return "{$v}-xdebug";
+            return "{$v}-console-xdebug";
         }
 
-        return $v;
+        return "{$v}-console";
     }
 }
