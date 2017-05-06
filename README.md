@@ -18,12 +18,9 @@ Eisenhardt is a very thin wrapper around Docker Compose.
 *	[Docker][install-docker]
 *	[Composer][install-composer] (and PHP)
 
-Install via Composer! (Packagist entry is coming)
+Install via Composer!
 
 ```bash
-composer global config repositories.eisenhardt vcs https://github.com/maxbucknell/eisenhardt.git
-composer global config "minimum-stability" "dev"
-composer global config "prefer-stable" "true"
 composer global require maxbucknell/eisenhardt
 ```
 
