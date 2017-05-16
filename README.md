@@ -529,6 +529,12 @@ There are also two data-only containers, used for mounting volumes:
 *	`magento_appdata` (`alpine`): Volume for Magento installation.
 *	`magento_databasedata` (`alpine`): Volume for MySQL data.
 
+#### Custom Containers
+
+Varnish and PHP are custom containers. These are available on the Docker Hub,
+but are also included in the main Eisenhardt repository. Move into the `dockerfiles/`
+directory, and run `./build.sh`.
+
 ### Docker Compose Files
 
 Eisenhardt is split into many different YAML files. This allows the

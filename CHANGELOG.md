@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Build script added for images
 - Dockerfiles into main Eisenhardt repository.
 
 
