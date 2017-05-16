@@ -98,6 +98,7 @@ EOT
         $image = "maxbucknell/php:{$tag}";
 
         $ipAddress = trim(`hostname -I | cut -d" " -f1`);
+        $width = trim(`tput cols`);
 
         $command = <<<CMD
 docker run                                           \
@@ -116,8 +117,9 @@ docker run                                           \
     -e PHP_IDE_CONFIG="serverName=rd"                             \
     -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
     -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
-    -w "{$workingDirectory}"                                         \
-    {$image}                                                          \
+    -e COLUMNS={$width}                                              \
+    -w "{$workingDirectory}"                                          \
+    {$image}                                                           \
     {$command}
 CMD
         ;
