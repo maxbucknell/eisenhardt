@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec varnishd -p http_resp_hdr_len="$HTTP_RESP_HDR_LEN" "$@"
