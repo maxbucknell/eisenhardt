@@ -76,6 +76,7 @@ eisenhardt run -- n98-magerun2 setup:install \
   --db-name="showoff" \
   --db-user="root" \
   --db-password="root" \
+  --http-cache-hosts="magento_pagecache:6081" \
   --base-url="http://test-eisenhardt.loc/" \
   --language="en_US" \
   --timezone="UTC" \
@@ -182,16 +183,18 @@ The container used is `maxbucknell/console`, and has an identical PHP
 configuration to the appservers. Along with that, it also has a variety of
 useful tools preinstalled, including:
 
-*	MySQL client
-*	Redis client
-*	Composer
-*	N98-Magerun2
-*	Git
-*	Curl
-*	Vim
+*	MySQL client (`n98-magerun2 db:con`)
+*	Redis client (`redis-cli -h magento_cache`)
+*	Composer (`composer`)
+*	N98-Magerun2 (`n98-magerun2`)
+*	Git (`git`)
+*	Curl (`curl`)
+*	Vim (`vim`)
+*   PV
+*   Liquidprompt
 
 A lot of configuration is also passed from your host to the container. In
-particular, Git configuration (including aliases), as well as SSH sockets, and
+particular, Git configuration (including aliases), as well as SSH Agent sockets, and
 Composer caches.
 
 If you are running a command that takes flags as arguments, these flags will be
@@ -229,7 +232,7 @@ within them inherit the group and permissions settings.
 This command can take a while to run, since it touches a lot of files. If you
 have `core.fileMode` set to `true` in your Git configuration, this can generate
 changes on your files. You can either commit these (they're good permissions,
-brent), or you can tell Git not to track permissions.
+Brent), or you can tell Git not to track permissions.
 
 ### `eisenhardt stop`
 
@@ -389,16 +392,13 @@ return array (
         ),
       ),
     ),
-    'page_cache' =>
+  ),
+  'http_cache_hosts' => 
+  array (
+    0 => 
     array (
-      'backend' => 'Cm_Cache_Backend_Redis',
-      'backend_options' =>
-      array (
-        'server' => 'magento_fpc',
-        'port' => '6379',
-        'database' => 2,
-        'compress_data' => '0',
-      ),
+      'host' => 'magento_pagecache',
+      'port' => '6081',
     ),
   ),
 );
@@ -478,9 +478,8 @@ It is common to want to test emails locally. Eisenhardt comes with MailHog,
 which catches all emails that are sent to any email address, and displays them
 in a web interface.
 
-`eisenhardt info` will show you the IP address of this container. You can either hit
-that up directly, or add a subdomain for it in your hosts file. If you are using
-Eisenhardt with the ports mapped, this dashboard is mounted at port `:1080`.
+It is possible to access MailHog directly, but the best way is to access
+`/eisenhardt/mail` on your Magento webserver, which will proxy it across.
 
 In addition to this, all emails are saved in the `.eisenhardt/mail` volume, as a record
 and as a convenient way of checking sources directly.
@@ -507,12 +506,13 @@ your changes.
 Eisenhardt comes with a variety of containers, and they all do different
 things. Here is a full list:
 
-*	`magento_webserver` (`nginx:alpine`): The container your browser will visit.
+*   `varnish_webserver` (`nginx:alpine`): The webserver you will visit. Responsible for SSL termination and sending to Varnish.
+*	`magento_webserver` (`nginx:alpine`): The webserver in front of PHP.
 *	`magento_appserver` (`maxbucknell/php:7.0`): Usually the container running Magento.
 *	`magento_appserver_debug` (`maxbucknell/php:7.0-xdebug`): Like `magento_appserver`, but with Xdebug.
 *	`magento_database` (`percona:5.6`): The database.
 *	`magento_cache` (`redis:alpine`): Cache backend.
-*	`magento_fpc` (`redis:alpine`): FPC storage backend.
+*   `magento_pagecache` (`maxbucknell/varnish:4`): Page Cache backend
 *	`magento_session` (`redis:alpine`): Session storage backend.
 *	`magento_mail` (`mailhog/mailhog`): SMTP server to catch emails.
 *	`magento_messagequeue` (`rabbitmq:management-alpine`): Message queue backend.
@@ -544,7 +544,9 @@ be generated from the name of the directory containing the `*.yml` file by
 default.
 
 Eisenhardt sets a custom name for its project based on the name of the
-directory of the Magento project. If left to its own devices, Docker Compose 
+directory of the Magento project. If left to its own devices, Docker Compose
+would call its project "eisenhardt" every time, since that's where the YAML
+files reside.
 
 ### Permissions
 
@@ -586,33 +588,6 @@ pattern.
 
 There are a few features that we would like to implement, but haven't had the
 chance to yet.
-
-### Varnish
-
-Currently, Eisenhardt is using Redis as the back end to Magento's shim of
-Varnish for FPC. This is not ideal.
-
-#### Docker Image
-
-There is no official image for Varnish, so we will need to make one. Some
-thought must be given to how startup time paramaters are set, because it's
-likely that some of these parameters will need to be customisable.
-
-Varnish exists in the `apk` repositories, so it shouldn't be too hard to set up
-a Dockerfile pretty quickly.
-
-#### Debugging
-
-The VCL that Magento generates is pretty standard, and can be shipped with
-Eisenhardt. However, some customisations will need to be made in development
-mode so that XDebug can be used through it.
-
-#### Easy to Disable
-
-It's entirely possible that a developer might not want to use Varnish. It can
-probably be achieved just by turning off Full Page Cache, but we should
-investigate making it easy to run Eisenhardt without Varnish. This will have
-a knock on impact to the Nginx configuration.
 
 ### TLS
 

@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-  magento_webserver:
+  varnish_webserver:
     ports:
       - "80:80"
       - "443:443"

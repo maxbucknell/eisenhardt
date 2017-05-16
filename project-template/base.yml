@@ -1,6 +1,15 @@
 version: '2'
 
 services:
+  varnish_webserver:
+    image: "nginx:alpine"
+    networks:
+      - "magento"
+    volumes:
+      - "./servers/eisenhardt.varnish.nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - "magento_pagecache"
+
   magento_webserver:
     image: "nginx:alpine"
     networks:
@@ -20,7 +29,6 @@ services:
     depends_on:
       - "magento_database"
       - "magento_cache"
-      - "magento_fpc"
       - "magento_session"
       - "magento_messagequeue"
 
@@ -37,14 +45,19 @@ services:
     image: "redis:alpine"
     networks:
       - "magento"
-  magento_fpc:
-    image: "redis:alpine"
-    networks:
-      - "magento"
   magento_session:
     image: "redis:alpine"
     networks:
       - "magento"
+
+  magento_pagecache:
+    image: "maxbucknell/varnish:4"
+    networks:
+      - "magento"
+    volumes:
+      - "./servers/eisenhardt.varnish.vcl:/etc/varnish/default.vcl"
+    depends_on:
+      - "magento_webserver"
 
   magento_messagequeue:
     image: "rabbitmq:management-alpine"
