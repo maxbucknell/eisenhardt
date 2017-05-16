@@ -472,6 +472,13 @@ array (
 This will dynamically set the Database host to **your** host IP according to the
 Docker container.
 
+### RabbitMQ
+
+RabbitMQ will largely take care of itself, but problems do come up. The
+container used includes the management console. This can be accessed by going
+to `/eisenhardt/rabbitmq`, and logging in. The username and password are both
+set to `guest` by default.
+
 ### Mail
 
 It is common to want to test emails locally. Eisenhardt comes with MailHog,
