@@ -316,11 +316,11 @@ return array (
   ),
   'install' =>
   array (
-    'date' => 'Fri, 17 Jul 2015 16:38:39 +0100',
+    'date' => 'Thu, 10 Feb 1994 15:12:49 +1200',
   ),
   'crypt' =>
   array (
-    'key' => '220d5f683d141d326d3e185f0dcd569c',
+    'key' => 'd928820f82d3e459641d334a5f1b427e',
   ),
   'session' =>
   array (
