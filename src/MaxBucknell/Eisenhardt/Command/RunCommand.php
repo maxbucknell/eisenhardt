@@ -109,17 +109,19 @@ docker run                                           \
     -u "\$(id -u):10118"                                  \
     -v "/etc/passwd:/etc/passwd"                           \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
-    -v "\$HOME/.config/composer:\$HOME/.composer"            \
-    -v "\$HOME/.npm:\$HOME/.npm"                              \
-    -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
-    -e COMPOSER_HOME="\$HOME/.composer"                         \
+    -v "\$HOME/.cache:\$HOME/.cache"                         \
+    -v "\$HOME/.config:\$HOME/.config"                        \
+    -v "\$HOME/.config/composer:\$HOME/.composer"              \
+    -v "\$HOME/.npm:\$HOME/.npm"                                \
+    -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                     \
+    -e COMPOSER_HOME="\$HOME/.composer"                           \
     -e XDEBUG_CONFIG="remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000" \
-    -e PHP_IDE_CONFIG="serverName=rd"                             \
-    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
-    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
-    -e COLUMNS={$width}                                              \
-    -w "{$workingDirectory}"                                          \
-    {$image}                                                           \
+    -e PHP_IDE_CONFIG="serverName=rd"                               \
+    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                             \
+    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                                \
+    -e COLUMNS={$width}                                                \
+    -w "{$workingDirectory}"                                            \
+    {$image}                                                             \
     {$command}
 CMD
         ;
