@@ -611,11 +611,5 @@ that you won't have issues with things like mixed assets when you deploy.
 We need some way of generating certificates through `eisenhardt run`, and making Nginx
 support this. More work is needed.
 
-### Enterprise Edition
-
-Eisenhardt was designed to work with Enterprise Edition by default, since
-that's what we use most of the time. It would be nice to make this a flag, and
-remove unnecessary containers for Community Edition.
-
 [install-docker]: https://docs.docker.com/engine/installation/linux/
 [install-composer]: https://getcomposer.org/download/
