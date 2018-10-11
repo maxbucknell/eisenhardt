@@ -113,7 +113,7 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find var/ -not -path './.eisenhardt/*' -exec chmod g+w {} \;
+  chmod -R g+w var
 CMD
             ,
             '<info>Adding group write permissions to <fg=yellow>pub/</></>' => <<<CMD
@@ -124,8 +124,29 @@ docker run \
   -u "root:root" \
   --volumes-from="{$projectName}_magento_appserver_1" \
   -w /mnt/magento alpine \
-  find pub/ -not -path './
-  .eisenhardt/*' -exec chmod g+w {} \;
+  chmod -R g+w pub
+CMD
+            ,
+            '<info>Adding group write permissions to <fg=yellow>app/etc/</></>' => <<<CMD
+docker run \
+  -it \
+  --rm \
+  --net={$networkName} \
+  -u "root:root" \
+  --volumes-from="{$projectName}_magento_appserver_1" \
+  -w /mnt/magento alpine \
+  chmod -R g+w app/etc
+CMD
+            ,
+            '<info>Adding group write permissions to <fg=yellow>generated/</></>' => <<<CMD
+docker run \
+  -it \
+  --rm \
+  --net={$networkName} \
+  -u "root:root" \
+  --volumes-from="{$projectName}_magento_appserver_1" \
+  -w /mnt/magento alpine \
+  chmod -R g+w generated
 CMD
             ,
             '<info>Making <fg=yellow>bin/magento</> executable</>' => <<<CMD
