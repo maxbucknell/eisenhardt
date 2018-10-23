@@ -62,6 +62,7 @@ services:
 
   magento_messagequeue:
     image: "rabbitmq:management-alpine"
+    hostname: "rabbitmq"
     networks:
       - "magento"
 
