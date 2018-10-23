@@ -13,7 +13,7 @@ services:
       - "magento_mail"
 
   magento_appserver_debug:
-    image: "maxbucknell/php:7.0-xdebug"
+    image: "maxbucknell/php:{{version}}-xdebug"
     networks:
       - "magento"
     volumes_from:

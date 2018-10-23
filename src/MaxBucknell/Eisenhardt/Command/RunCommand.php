@@ -22,11 +22,6 @@ use MaxBucknell\Eisenhardt\ProjectFactory;
 class RunCommand extends Command
 {
     /**
-     * PHP Version to use for Magento 2.
-     */
-    const PHP_VERSION = '7.0';
-
-    /**
      * @var Project
      */
     private $project;
@@ -41,6 +36,13 @@ class RunCommand extends Command
             ->setDescription('Run a command inside a Eisenhardt environment')
             ->setDefinition(
                 new InputDefinition([
+                    new InputOption(
+                        'php-version',
+                        'p',
+                        InputOption::VALUE_OPTIONAL,
+                        'PHP version to run task as',
+                        'project'
+                    ),
                     new InputOption(
                         'debug',
                         'x',
@@ -93,7 +95,12 @@ EOT
 
         $isDryRun = $input->getOption('dry-run');
 
-        $tag = $this->getTag($input->getOption('debug'));
+        $tag = $this->getTag(
+            $projectName,
+            $input->getOption('php-version'),
+            $input->getOption('debug'),
+            $output
+        );
 
         $image = "maxbucknell/php:{$tag}";
 
@@ -145,9 +152,45 @@ CMD
      * @return string
      */
     private function getTag(
-        bool $debug
+        string $projectName,
+        string $v,
+        bool $debug,
+        OutputInterface $output
     ) {
-        $v = static::PHP_VERSION;
+        if ($v === 'project') {
+            $output->writeln(
+                "Collecting version information",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+
+            $versionCommand = <<<CMD
+docker-compose \
+    -f .eisenhardt/base.yml \
+    -p "{$projectName}" \
+    exec \
+    magento_appserver \
+    php --version | \
+    head -1 | \
+    cut -d" " -f 2
+CMD
+            ;
+
+            $output->writeln(
+                "Version command: {$versionCommand}",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+
+            $fullVersion = shell_exec($versionCommand);
+
+            $output->writeln(
+                "Found version: {$fullVersion}",
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+
+            $versionComponents = explode('.', $fullVersion);
+
+            $v = "{$versionComponents[0]}.{$versionComponents[1]}";
+        }
 
         if ($debug) {
             return "{$v}-console-xdebug";

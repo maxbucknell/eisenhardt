@@ -20,7 +20,7 @@ services:
       - "magento_appserver"
 
   magento_appserver:
-    image: "maxbucknell/php:7.0"
+    image: "maxbucknell/php:{{version}}"
     networks:
       - "magento"
     volumes:
@@ -51,7 +51,7 @@ services:
       - "magento"
 
   magento_pagecache:
-    image: "maxbucknell/varnish:4"
+    image: "maxbucknell/varnish:latest"
     networks:
       - "magento"
     volumes:
