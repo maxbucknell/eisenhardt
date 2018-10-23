@@ -17,6 +17,7 @@ Eisenhardt is a very thin wrapper around Docker Compose.
 
 *	[Docker][install-docker]
 *	[Composer][install-composer] (and PHP)
+*	[mkcert][install-mkcert]
 
 Install via Composer!
 
@@ -43,7 +44,7 @@ This creates a Magento 2 base project in the `test-eisenhardt` directory. Switch
 and set up Eisenhardt:
 
 ```bash
-eisenhardt init
+eisenhardt init test-eisenhardt.loc
 eisenhardt start
 ```
 
@@ -597,25 +598,6 @@ Eisenhardt comes with a command, `eisenhardt fix-permissions` to set permissions
 described above. It is unusual to have permissions troubles following this
 pattern.
 
-## To Do
-
-There are a few features that we would like to implement, but haven't had the
-chance to yet.
-
-### TLS
-
-Right now, everything runs over simple HTTP. While HTTPS is not a requirement
-for local development, it's a good idea to run with it tested so you can verify
-that you won't have issues with things like mixed assets when you deploy.
-
-We need some way of generating certificates through `eisenhardt run`, and making Nginx
-support this. More work is needed.
-
-### Enterprise Edition
-
-Eisenhardt was designed to work with Enterprise Edition by default, since
-that's what we use most of the time. It would be nice to make this a flag, and
-remove unnecessary containers for Community Edition.
-
 [install-docker]: https://docs.docker.com/engine/installation/linux/
 [install-composer]: https://getcomposer.org/download/
+[install-mkcert]: https://github.com/FiloSottile/mkcert
