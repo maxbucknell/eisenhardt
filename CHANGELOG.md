@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - PHP version selection
+- TLS support with mkcert
 
 ## [0.2.0]
 
