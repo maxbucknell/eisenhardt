@@ -11,7 +11,7 @@ COPY default.vcl /etc/varnish/default.vcl
 
 EXPOSE 6081
 
-ENV HTTP_RESP_HDR_LEN 12k
+ENV HTTP_RESP_HDR_LEN 32k
 
 CMD [ "-F", "-a :6081", "-f/etc/varnish/default.vcl" ]
 ENTRYPOINT [ "docker-varnish-entrypoint" ]

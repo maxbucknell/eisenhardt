@@ -1,0 +1,4 @@
+RUN set -xe \
+        && groupadd -r eisenhardt-www --gid=10118 \
+        && useradd -r -g eisenhardt-www --uid=10118 eisenhardt-www
+
