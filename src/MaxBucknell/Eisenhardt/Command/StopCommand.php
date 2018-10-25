@@ -57,12 +57,10 @@ EOT
         $projectName = $this->project->getProjectName();
 
         $command = <<<CMD
-docker-compose \
+docker-compose           \
   -f .eisenhardt/base.yml \
-  -f .eisenhardt/dev.yml \
-  -f .eisenhardt/appvolumes.yml \
-  -f .eisenhardt/dbvolumes.yml \
-  -p {$projectName} \
+  -f .eisenhardt/dev.yml   \
+  -p {$projectName}         \
   stop
 CMD
         ;

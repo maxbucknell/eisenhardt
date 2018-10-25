@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   magento_webserver:
@@ -16,8 +16,8 @@ services:
     image: "maxbucknell/php:{{version}}-xdebug"
     networks:
       - "magento"
-    volumes_from:
-      - "magento_appserver"
+    volumes:
+      - "..:/mnt/magento"
     depends_on:
       - "magento_appserver"
 

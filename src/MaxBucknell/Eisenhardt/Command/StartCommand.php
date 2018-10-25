@@ -76,10 +76,8 @@ EOT
 docker-compose                \
   -f .eisenhardt/base.yml      \
   -f .eisenhardt/dev.yml        \
-  -f .eisenhardt/appvolumes.yml  \
-  -f .eisenhardt/dbvolumes.yml    \
-  {$portInclude}                   \
-  -p {$projectName}                 \
+  {$portInclude}                 \
+  -p {$projectName}               \
   up -d --force-recreate 2> /dev/null
 CMD
         ;
