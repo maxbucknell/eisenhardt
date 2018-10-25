@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - TLS support with mkcert
 - RabbitMQ hostname to preserve data across restarts
 
+
+### Removed
+
+- Volume specific containers in favour of naming them in the containers
+
 ## [0.2.0]
 
 ### Added

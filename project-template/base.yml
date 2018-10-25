@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   varnish_webserver:
@@ -17,6 +17,7 @@ services:
       - "magento"
     volumes:
       - "./servers/eisenhardt.nginx.conf:/etc/nginx/nginx.conf"
+      - "../pub:/mnt/magento/pub"
     depends_on:
       - "magento_appserver"
 
@@ -27,6 +28,7 @@ services:
     volumes:
       - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"
       - "./servers/eisenhardt.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
+      - "..:/mnt/magento"
     depends_on:
       - "magento_database"
       - "magento_cache"
@@ -39,6 +41,7 @@ services:
       - "magento"
     volumes:
       - "./servers/eisenhardt.my.cnf:/etc/mysql/my.cnf"
+      - "./data:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: "root"
 
