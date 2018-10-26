@@ -1,27 +1,25 @@
 version: '3'
 
 services:
-  magento_webserver:
+  nginx:
     depends_on:
-      - "magento_appserver_debug"
+      - "appserver_debug"
 
-  magento_appserver:
+  appserver_debug:
     volumes:
       - "./servers/mailhog.eisenhardt.php.ini:/usr/local/etc/php/conf.d/mailhog.eisenhardt.php.ini"
       - "./servers/eisenhardt.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
     depends_on:
-      - "magento_mail"
+      - "mailhog"
 
-  magento_appserver_debug:
+  appserver_debug:
     image: "maxbucknell/php:{{version}}-xdebug"
     networks:
       - "magento"
     volumes:
       - "..:/mnt/magento"
-    depends_on:
-      - "magento_appserver"
 
-  magento_mail:
+  mailhog:
     image: "mailhog/mailhog"
     user: "root"
     expose:

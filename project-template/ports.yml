@@ -1,16 +1,16 @@
 version: '3'
 
 services:
-  varnish_webserver:
+  varnish_nginx:
     ports:
       - "80:80"
       - "443:443"
-  magento_database:
+  database:
     ports:
       - "3306:3306"
-  magento_messagequeue:
+  rabbitmq:
     ports:
       - "15672:15672"
-  magento_mail:
+  mailhog:
     ports:
       - "1080:80"
