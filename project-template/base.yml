@@ -69,6 +69,16 @@ services:
     networks:
       - "magento"
 
+  elasticsearch:
+    image: "elasticsearch:5"
+    networks:
+    - "magento"
+
+  kibana:
+    image: "kibana:5"
+    networks:
+    - "magento"
+
 networks:
   magento:
     driver: bridge
