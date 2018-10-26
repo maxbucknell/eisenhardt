@@ -191,8 +191,9 @@ useful tools preinstalled, including:
 *	Git (`git`)
 *	Curl (`curl`)
 *	Vim (`vim`)
-*   PV
-*   Liquidprompt
+*	PV
+*	Liquidprompt
+*	Node.js (with npm __and__ Yarn)
 
 A lot of configuration is also passed from your host to the container. In
 particular, Git configuration (including aliases), as well as SSH Agent sockets, and
@@ -514,21 +515,18 @@ your changes.
 Eisenhardt comes with a variety of containers, and they all do different
 things. Here is a full list:
 
-*   `varnish_webserver` (`nginx:alpine`): The webserver you will visit. Responsible for SSL termination and sending to Varnish.
+*	`varnish_webserver` (`nginx:alpine`): The webserver you will visit. Responsible for SSL termination and sending to Varnish.
 *	`magento_webserver` (`nginx:alpine`): The webserver in front of PHP.
 *	`magento_appserver` (`maxbucknell/php:7.0`): Usually the container running Magento.
 *	`magento_appserver_debug` (`maxbucknell/php:7.0-xdebug`): Like `magento_appserver`, but with Xdebug.
 *	`magento_database` (`percona:5.6`): The database.
 *	`magento_cache` (`redis:alpine`): Cache backend.
-*   `magento_pagecache` (`maxbucknell/varnish:4`): Page Cache backend
+*	`magento_pagecache` (`maxbucknell/varnish:4`): Page Cache backend
 *	`magento_session` (`redis:alpine`): Session storage backend.
 *	`magento_mail` (`mailhog/mailhog`): SMTP server to catch emails.
 *	`magento_messagequeue` (`rabbitmq:management-alpine`): Message queue backend.
-
-There are also two data-only containers, used for mounting volumes:
-
-*	`magento_appdata` (`alpine`): Volume for Magento installation.
-*	`magento_databasedata` (`alpine`): Volume for MySQL data.
+*	`elasticsearch` (`elasticsearch:5`): Elastic Search backend.
+*	`kibana` (`kibana:5`): Management backend for Elastic Search.
 
 #### Custom Containers
 
@@ -545,8 +543,6 @@ environment can be started with or without port mappings.
 
 *	`base.yml`: Base YAML file, containing services that would be essential for production. No volumes exist here.
 *	`dev.yml`: Services required for development, including `magento_appserver_debug` and `magento_mail`.
-*	`appvolumes.yml`: `magento_appdata` plus `volumes_from` directives.
-*	`dbvolumes.yml`: `magento_databasedata` plus `volumes_from` directives.
 *	`ports.yml`: Map ports `:80`, `:443`, `:3306`, `:15672` (RabbitMQ), and `:1080` (Mailhog).
 
 ### Project Name

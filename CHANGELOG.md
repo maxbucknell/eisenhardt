@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - PHP version selection
 - TLS support with mkcert
 - RabbitMQ hostname to preserve data across restarts
+- Elastic Search and Kibana
 
 
 ### Removed
