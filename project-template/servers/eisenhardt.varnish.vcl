@@ -5,7 +5,7 @@ import std;
 # For SSL offloading, pass the following header in your proxy server or load balancer: 'X-Forwarded-Proto: https'
 
 backend default {
-    .host = "magento_webserver";
+    .host = "nginx";
     .port = "80";
 }
 

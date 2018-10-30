@@ -99,6 +99,6 @@ class Project
      */
     public function getNetworkName()
     {
-        return "{$this->getProjectName()}_magento";
+        return "{$this->getProjectName()}_eisenhardt";
     }
 }
