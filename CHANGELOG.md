@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.2.0]
 
+### Changed
+
+ - Permissions fixer now works with Magento 2.2+
+
 ### Added
 
 - Build script added for images
