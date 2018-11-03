@@ -50,7 +50,7 @@ def build_image(image):
     """Build a given image."""
     tag = 'maxbucknell/{}'.format(image)
     build_directory = './build/{}'.format(image)
-    os.system('docker build -t {} {}'.format(tag, build_directory))
+    os.system('docker build --no-cache -t {} {}'.format(tag, build_directory))
 
 if __name__ == "__main__":
     os.system('rm -rf build')
