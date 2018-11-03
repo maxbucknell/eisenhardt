@@ -121,7 +121,7 @@ docker run                                           \
     -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
     -e COMPOSER_HOME="\$HOME/.composer"                         \
     -e XDEBUG_CONFIG="remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000" \
-    -e PHP_IDE_CONFIG="serverName=rd"                             \
+    -e PHP_IDE_CONFIG="serverName=':-)'"                          \
     -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
     -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
     -e COLUMNS={$width}                                              \

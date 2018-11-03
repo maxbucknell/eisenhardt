@@ -63,7 +63,7 @@ eisenhardt fix-permissions
 And make sure the database exists:
 
 ```bash
-eisenhardt run -- mysql -hmagento_database -uroot -proot
+eisenhardt run -- mysql -hdatabase -uroot -proot
 MySQL [(none)]> create database showoff;
 ```
 
@@ -73,11 +73,11 @@ to change anything if you need to.
 ```bash
 eisenhardt run -- n98-magerun2 setup:install \
   --backend-frontname="admin" \
-  --db-host="magento_database" \
+  --db-host="database" \
   --db-name="showoff" \
   --db-user="root" \
   --db-password="root" \
-  --http-cache-hosts="magento_pagecache:6081" \
+  --http-cache-hosts="varnish:6081" \
   --base-url="http://test-eisenhardt.loc/" \
   --language="en_US" \
   --timezone="UTC" \
@@ -93,7 +93,7 @@ If you are running Enterprise, you can configure the Message Queue framework
 with these arguments:
 
 ```
-  --amqp-host="magento_messagequeue" \
+  --amqp-host="rabbitmq" \
   --amqp-port="5672" \
   --amqp-user="guest" \
   --amqp-password="guest" \
@@ -128,7 +128,7 @@ eisenhardt init
 eisenhardt start
 eisenhardt info
 # Edit your /etc/hosts file to point your base URL to the IP address of the webserver
-# Edit your app/etc/env.php to point your database at `magento_database`.
+# Edit your app/etc/env.php to point your database at `database`.
 eisenhardt run -- n98-magerun2 db:import <path/to/database.sql>
 ```
 
@@ -185,7 +185,7 @@ configuration to the appservers. Along with that, it also has a variety of
 useful tools preinstalled, including:
 
 *	MySQL client (`n98-magerun2 db:con`)
-*	Redis client (`redis-cli -h magento_cache`)
+*	Redis client (`redis-cli -h cache`)
 *	Composer (`composer`)
 *	N98-Magerun2 (`n98-magerun2`)
 *	Git (`git`)
@@ -278,7 +278,7 @@ return array (
   array (
     'amqp' =>
     array (
-      'host' => 'magento_messagequeue',
+      'host' => 'rabbitmq',
       'port' => '5672',
       'user' => 'guest',
       'password' => 'guest',
@@ -292,7 +292,7 @@ return array (
     array (
       'indexer' =>
       array (
-        'host' => 'magento_database',
+        'host' => 'database',
         'dbname' => 'magento2',
         'username' => 'root',
         'password' => 'root',
@@ -304,7 +304,7 @@ return array (
       ),
       'default' =>
       array (
-        'host' => 'magento_database',
+        'host' => 'database',
         'dbname' => 'magento2',
         'username' => 'root',
         'password' => 'root',
@@ -329,7 +329,7 @@ return array (
     'save' => 'redis',
     'redis' =>
     array (
-      'host' => 'magento_session',
+      'host' => 'session',
       'port' => '6379',
       'password' => '',
       'timeout' => '2.5',
@@ -384,7 +384,7 @@ return array (
         'backend' => 'Cm_Cache_Backend_Redis',
         'backend_options' =>
         array (
-          'server' => 'magento_cache',
+          'server' => 'cache',
           'port' => '6379',
           'persistent' => '',
           'database' => 0,
@@ -399,7 +399,7 @@ return array (
   array (
     0 => 
     array (
-      'host' => 'magento_pagecache',
+      'host' => 'varnish',
       'port' => '6081',
     ),
   ),
@@ -516,15 +516,15 @@ Eisenhardt comes with a variety of containers, and they all do different
 things. Here is a full list:
 
 *	`varnish_webserver` (`nginx:alpine`): The webserver you will visit. Responsible for SSL termination and sending to Varnish.
-*	`magento_webserver` (`nginx:alpine`): The webserver in front of PHP.
-*	`magento_appserver` (`maxbucknell/php:7.0`): Usually the container running Magento.
-*	`magento_appserver_debug` (`maxbucknell/php:7.0-xdebug`): Like `magento_appserver`, but with Xdebug.
-*	`magento_database` (`percona:5.6`): The database.
-*	`magento_cache` (`redis:alpine`): Cache backend.
-*	`magento_pagecache` (`maxbucknell/varnish:4`): Page Cache backend
-*	`magento_session` (`redis:alpine`): Session storage backend.
-*	`magento_mail` (`mailhog/mailhog`): SMTP server to catch emails.
-*	`magento_messagequeue` (`rabbitmq:management-alpine`): Message queue backend.
+*	`nginx` (`nginx:alpine`): The webserver in front of PHP.
+*	`appserver` (`maxbucknell/php:7.0`): Usually the container running Magento.
+*	`appserver_debug` (`maxbucknell/php:7.0-xdebug`): Like `appserver`, but with Xdebug.
+*	`database` (`percona:5.6`): The database.
+*	`cache` (`redis:alpine`): Cache backend.
+*	`varnis` (`maxbucknell/varnish:4`): Page Cache backend
+*	`session` (`redis:alpine`): Session storage backend.
+*	`mailhog` (`mailhog/mailhog`): SMTP server to catch emails.
+*	`rabbitmq` (`rabbitmq:management-alpine`): Message queue backend.
 *	`elasticsearch` (`elasticsearch:5`): Elastic Search backend.
 *	`kibana` (`kibana:5`): Management backend for Elastic Search.
 
@@ -542,7 +542,8 @@ the port mappings are configured in a different file (`ports.yml`), so the
 environment can be started with or without port mappings.
 
 *	`base.yml`: Base YAML file, containing services that would be essential for production. No volumes exist here.
-*	`dev.yml`: Services required for development, including `magento_appserver_debug` and `magento_mail`.
+*	`dev.yml`: Services required for development, including
+`appserver_debug` and `mailhog`.
 *	`ports.yml`: Map ports `:80`, `:443`, `:3306`, `:15672` (RabbitMQ), and `:1080` (Mailhog).
 
 ### Project Name

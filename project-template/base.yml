@@ -1,84 +1,85 @@
 version: '3'
 
 services:
-  varnish_webserver:
+  varnish_nginx:
     image: "nginx:alpine"
     networks:
-      - "magento"
+      - "eisenhardt"
     volumes:
       - "./servers/eisenhardt.varnish.nginx.conf:/etc/nginx/nginx.conf"
       - "./tls/:/etc/eisenhardt/tls"
     depends_on:
-      - "magento_pagecache"
+      - "varnish"
 
-  magento_webserver:
+  nginx:
     image: "nginx:alpine"
     networks:
-      - "magento"
+      - "eisenhardt"
     volumes:
       - "./servers/eisenhardt.nginx.conf:/etc/nginx/nginx.conf"
       - "../pub:/mnt/magento/pub"
     depends_on:
-      - "magento_appserver"
+      - "appserver"
 
-  magento_appserver:
+  appserver:
     image: "maxbucknell/php:{{version}}"
     networks:
-      - "magento"
+      - "eisenhardt"
     volumes:
       - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"
       - "./servers/eisenhardt.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
       - "..:/mnt/magento"
     depends_on:
-      - "magento_database"
-      - "magento_cache"
-      - "magento_session"
-      - "magento_messagequeue"
+      - "database"
+      - "cache"
+      - "session"
+      - "rabbitmq"
 
-  magento_database:
+  database:
     image: percona:5.6
     networks:
-      - "magento"
+      - "eisenhardt"
     volumes:
       - "./servers/eisenhardt.my.cnf:/etc/mysql/my.cnf"
       - "./data:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: "root"
 
-  magento_cache:
+  cache:
     image: "redis:alpine"
     networks:
-      - "magento"
-  magento_session:
-    image: "redis:alpine"
-    networks:
-      - "magento"
+      - "eisenhardt"
 
-  magento_pagecache:
+  session:
+    image: "redis:alpine"
+    networks:
+      - "eisenhardt"
+
+  varnish:
     image: "maxbucknell/varnish:latest"
     networks:
-      - "magento"
+      - "eisenhardt"
     volumes:
       - "./servers/eisenhardt.varnish.vcl:/etc/varnish/default.vcl"
     depends_on:
-      - "magento_webserver"
+      - "nginx"
 
-  magento_messagequeue:
+  rabbitmq:
     image: "rabbitmq:management-alpine"
     hostname: "rabbitmq"
     networks:
-      - "magento"
+      - "eisenhardt"
 
   elasticsearch:
     image: "elasticsearch:5"
     networks:
-    - "magento"
+    - "eisenhardt"
 
   kibana:
     image: "kibana:5"
     networks:
-    - "magento"
+    - "eisenhardt"
 
 networks:
-  magento:
+  eisenhardt:
     driver: bridge
