@@ -13,11 +13,15 @@ services:
       - "magento_mail"
 
   magento_appserver_debug:
-    image: "maxbucknell/php:{{version}}-xdebug"
+    image: "maxbucknell/php:7.0-xdebug"
     networks:
       - "magento"
     volumes:
       - "..:/mnt/magento"
+      - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"
+      - "./servers/eisenhardt.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
+      - "./servers/mailhog.eisenhardt.php.ini:/usr/local/etc/php/conf.d/mailhog.eisenhardt.php.ini"
+      - "./servers/eisenhardt.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
     depends_on:
       - "magento_appserver"
 
