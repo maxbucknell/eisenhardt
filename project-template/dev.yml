@@ -5,7 +5,7 @@ services:
     depends_on:
       - "appserver_debug"
 
-  appserver_debug:
+  appserver:
     volumes:
       - "./servers/mailhog.eisenhardt.php.ini:/usr/local/etc/php/conf.d/mailhog.eisenhardt.php.ini"
       - "./servers/eisenhardt.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
@@ -18,6 +18,10 @@ services:
       - "eisenhardt"
     volumes:
       - "..:/mnt/magento"
+      - "./servers/mailhog.eisenhardt.php.ini:/usr/local/etc/php/conf.d/mailhog.eisenhardt.php.ini"
+      - "./servers/eisenhardt.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
+      - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"
+      - "./servers/eisenhardt.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
 
   mailhog:
     image: "mailhog/mailhog"
