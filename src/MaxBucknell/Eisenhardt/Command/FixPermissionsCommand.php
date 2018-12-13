@@ -7,9 +7,6 @@ namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use MaxBucknell\Eisenhardt\Project;
 use MaxBucknell\Eisenhardt\ProjectFactory;
@@ -34,11 +31,11 @@ class FixPermissionsCommand extends Command
         $this
             ->setName('fix-permissions')
             ->setDescription('Fix permissions of your Magento 2 installation')
-            ->setHelp(<<<EOT
+            ->setHelp(<<<TEXT
 The <info>fix-permissions</> command repairs the permissions of the
 Magento 2 installation, setting appropriate ownership and permissions
 on all files and folders.
-EOT
+TEXT
         );
     }
 
