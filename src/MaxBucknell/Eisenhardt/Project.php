@@ -9,7 +9,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
- * Object representing a Eisenhardt project.
+ * Object representing a Magento installation.
  *
  * Encapsulates knowledge about its location.
  */

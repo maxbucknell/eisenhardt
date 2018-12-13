@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MaxBucknell\Eisenhardt\Command;
 
+use MaxBucknell\Eisenhardt\ModuleFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -72,6 +73,11 @@ EOT
             ['magento-version', $input->getOption('magento-version')],
             ['commerce', $input->getOption('commerce')]
         ]);
+
+        $module = ModuleFactory::findFromWorkingDirectory();
+        $location = $module->getModuleDirectory();
+
+        $output->writeln("Found module in <info>{$location}</>");
 
         $table->render();
     }
