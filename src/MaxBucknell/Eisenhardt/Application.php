@@ -5,9 +5,8 @@
 
 namespace MaxBucknell\Eisenhardt;
 
+use MaxBucknell\Eisenhardt\Command\StandupCommand;
 use Symfony\Component\Console\Application as ConsoleApplication;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 use MaxBucknell\Eisenhardt\Command\InitCommand;
 use MaxBucknell\Eisenhardt\Command\RunCommand;
@@ -34,5 +33,6 @@ class Application extends ConsoleApplication
         $this->add(new StopCommand());
         $this->add(new InfoCommand());
         $this->add(new FixPermissionsCommand());
+        $this->add(new StandupCommand());
     }
 }
