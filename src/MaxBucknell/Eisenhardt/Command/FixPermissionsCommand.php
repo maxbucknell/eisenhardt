@@ -67,7 +67,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   find . -not -path './.eisenhardt/*' -exec chown "$(id -u):10118" {} \;
 CMD
@@ -78,7 +78,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   find . -type f -not -path './.eisenhardt/*' -exec chmod 744 {} \;
 CMD
@@ -89,7 +89,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   find . -type d -not -path './.eisenhardt/*' -exec chmod 755 {} \;
 CMD
@@ -100,7 +100,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   find . -type d -not -path './.eisenhardt/*' -exec chmod g+s {} \;
 CMD
@@ -111,7 +111,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   chmod -R g+w var
 CMD
@@ -122,7 +122,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   chmod -R g+w pub
 CMD
@@ -133,7 +133,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   chmod -R g+w app/etc
 CMD
@@ -144,7 +144,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   chmod -R g+w generated
 CMD
@@ -155,7 +155,7 @@ docker run \
   --rm \
   --net={$networkName} \
   -u "root:root" \
-  --volumes-from="{$projectName}_magento_appserver_1" \
+  --volumes-from="{$projectName}_appserver_1" \
   -w /mnt/magento alpine \
   chmod +x bin/magento
 CMD
