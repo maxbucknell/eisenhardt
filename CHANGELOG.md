@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - TLS support with mkcert
 - RabbitMQ hostname to preserve data across restarts
 - Elastic Search and Kibana
+- Standup
 
 
 ### Removed
