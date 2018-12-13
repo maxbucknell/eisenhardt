@@ -65,9 +65,11 @@ class RunCommand extends Command
             )
             ->setHelp(<<<EOT
 The <info>run</> command creates an ephemeral container based on the
-redbox-digital/docker-console image, mounts the volumes and joins the
+maxbucknell/php:*-console image, mounts the volumes and joins the
 networks in the current Eisenhardt project, and executes the given
 command.
+
+If no command is supplied, an interactive terminal is opened.
 EOT
             );
     }
@@ -107,11 +109,13 @@ EOT
         $ipAddress = trim(`hostname -I | cut -d" " -f1`);
         $width = trim(`tput cols`);
 
+        $xdebugString = "remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000";
+
         $command = <<<CMD
 docker run                                           \
     -it                                               \
     --rm                                               \
-    --volumes-from="{$projectName}_magento_appserver_1" \
+    --volumes-from="{$projectName}_appserver_1"         \
     --net="{$networkName}"                               \
     -u "\$(id -u):10118"                                  \
     -v "/etc/passwd:/etc/passwd"                           \
@@ -120,8 +124,8 @@ docker run                                           \
     -v "\$HOME/.npm:\$HOME/.npm"                              \
     -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
     -e COMPOSER_HOME="\$HOME/.composer"                         \
-    -e XDEBUG_CONFIG="remote_host={$ipAddress} remote_connect_back=0 xdebug.remote_mode=req xdebug.remote_port=9000" \
-    -e PHP_IDE_CONFIG="serverName=':-)'"                          \
+    -e XDEBUG_CONFIG="{$xdebugString}"                           \
+    -e PHP_IDE_CONFIG="serverName='eisenhardt'"                   \
     -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK"                           \
     -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK"                              \
     -e COLUMNS={$width}                                              \
@@ -148,7 +152,10 @@ CMD
      * Depending on the circumstances, a different container version may
      * be used.
      *
+     * @param string $projectName
+     * @param string $v
      * @param bool $debug Use Xdebug.
+     * @param OutputInterface $output
      * @return string
      */
     private function getTag(
@@ -168,7 +175,7 @@ docker-compose \
     -f .eisenhardt/base.yml \
     -p "{$projectName}" \
     exec \
-    magento_appserver \
+    appserver \
     php --version | \
     head -1 | \
     cut -d" " -f 2
