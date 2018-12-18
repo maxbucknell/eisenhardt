@@ -46,7 +46,7 @@ class InitCommand extends Command
                     ),
                     new InputArgument(
                         'hostname',
-                        InputArgument::REQUIRED,
+                        InputArgument::OPTIONAL,
                         'Host name this installation will run on. Required for TLS'
                     )
                 ])
@@ -102,7 +102,7 @@ EOT
     ) {
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
-        $hostname = $input->getArgument('hostname');
+        $hostname = $input->getArgument('hostname') ?? $this->project->getProjectName() . '.loc';
         $mkcertCommand = "mkcert {$hostname} *.{$hostname} 2>&1";
 
         chdir($this->project->getEisenhardtDirectory());
