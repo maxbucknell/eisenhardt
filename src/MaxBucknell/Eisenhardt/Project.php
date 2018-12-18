@@ -101,4 +101,14 @@ class Project
     {
         return "{$this->getProjectName()}_eisenhardt";
     }
+
+    public function installContribFile($file)
+    {
+        $destination = "{$this->getEisenhardtDirectory()}/contrib/";
+
+        $copyCommand = "cp {$file} {$destination}";
+
+        \mkdir($destination);
+        \shell_exec($copyCommand);
+    }
 }

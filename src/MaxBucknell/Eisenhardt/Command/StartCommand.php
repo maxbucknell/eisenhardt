@@ -38,8 +38,14 @@ class StartCommand extends Command
                     new InputOption(
                         'map-ports',
                         'p',
-                        null,
+                        InputOption::VALUE_NONE,
                         'Map important ports to your host'
+                    ),
+                    new InputOption(
+                        'no-contrib',
+                        'c',
+                        InputOption::VALUE_NONE,
+                        'Ignore YML files from .eisenhardt/contrib/*'
                     )
                 ])
             )
@@ -59,15 +65,18 @@ EOT
     ) {
         $this->project = ProjectFactory::findFromWorkingDirectory();
 
-        $p = $input->getOption('map-ports');
-
-        $portInclude = $p ? '-f .eisenhardt/ports.yml' : '';
         $workingDirectory = $this->project->getInstallationDirectory();
         $output->writeln(
             "Found project in `{$workingDirectory}`.",
             OutputInterface::VERBOSITY_VERBOSE
         );
         chdir($workingDirectory);
+
+        $p = $input->getOption('map-ports');
+        $portInclude = $p ? '-f .eisenhardt/ports.yml' : '';
+
+        $contrib = !$input->getOption('no-contrib');
+        $contribInclude = $contrib ? $this->getContribInclude() : '';
 
         $projectName = $this->project->getProjectName();
 
@@ -77,10 +86,10 @@ docker-compose                \
   -f .eisenhardt/base.yml      \
   -f .eisenhardt/dev.yml        \
   {$portInclude}                 \
-  -p {$projectName}               \
+  {$contribInclude}               \
+  -p {$projectName}                \
   up -d --force-recreate 2> /dev/null
-CMD
-        ;
+CMD;
 
         $output->writeln(
             "Running: {$command}",
@@ -89,5 +98,21 @@ CMD
         passthru($command);
         $output->writeln('All containers started:');
         $output->writeln('<info>Run <fg=yellow>eisenhardt info</> to view IP addresses and container statuses.</>');
+    }
+
+    private function getContribInclude()
+    {
+        $eisenhardtDirectory = $this->project->getEisenhardtDirectory();
+        $files = \glob("{$eisenhardtDirectory}/contrib/*.yml");
+
+        return \implode(
+            " ",
+            \array_map(
+                function ($file) {
+                    return "-f $file";
+                },
+                $files
+            )
+        );
     }
 }
