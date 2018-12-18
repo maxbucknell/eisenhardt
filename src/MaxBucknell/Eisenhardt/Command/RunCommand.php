@@ -120,7 +120,7 @@ docker run                                           \
     -u "\$(id -u):10118"                                  \
     -v "/etc/passwd:/etc/passwd"                           \
     -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts"    \
-    -v "\$HOME/.config/composer:\$HOME/.composer"            \
+    -v "\$COMPOSER_HOME:\$HOME/.composer"            \
     -v "\$HOME/.npm:\$HOME/.npm"                              \
     -v "\$HOME/.gitconfig:\$HOME/.gitconfig"                   \
     -e COMPOSER_HOME="\$HOME/.composer"                         \
