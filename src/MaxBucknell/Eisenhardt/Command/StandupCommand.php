@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace MaxBucknell\Eisenhardt\Command;
 
 use MaxBucknell\Eisenhardt\ModuleFactory;
+use MaxBucknell\Eisenhardt\Util\MagentoInstallation;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -64,23 +64,33 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<error>Not implemented yet</>');
-
-        $table = new Table($output);
-        $table->setHeaders(['option', 'value']);
-        $table->setRows([
-            ['sample-data', $input->getOption('sample-data')],
-            ['magento-version', $input->getOption('magento-version')],
-            ['commerce', $input->getOption('commerce')]
-        ]);
-
         $module = ModuleFactory::findFromWorkingDirectory();
         $location = $module->getModuleDirectory();
+        $output->writeln(
+            "Found module in <info>{$location}</>",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
 
-        $output->writeln("Found module in <info>{$location}</>");
+        $installationName = \md5((string)\mt_rand());
+        $directory = $module->getStandupDirectory() . "/{$installationName}";
 
-        $table->render();
+        $output->writeln(
+            "Initialising installation in <info>{$directory}</>",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
+
+        $output->writeln(
+            "Creating Magento Composer project from metapackage"
+        );
+        $projectCreateOutput = MagentoInstallation::createProject(
+            $directory,
+            $input->getOption('magento-version') ?? '2.3.0',
+            $input->getOption('commerce') ? 'enterprise' : 'community'
+        );
+
+        $output->writeln(
+            "Output: {$projectCreateOutput}",
+            OutputInterface::VERBOSITY_VERBOSE
+        );
     }
-
-
 }
