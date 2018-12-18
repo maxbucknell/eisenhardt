@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MaxBucknell\Eisenhardt\Command;
 
 use MaxBucknell\Eisenhardt\ModuleFactory;
+use MaxBucknell\Eisenhardt\ProjectFactory;
 use MaxBucknell\Eisenhardt\Util\MagentoInstallation;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -91,6 +92,15 @@ EOT
         $output->writeln(
             "Output: {$projectCreateOutput}",
             OutputInterface::VERBOSITY_VERBOSE
+        );
+
+        $output->writeln(
+            "Initialising Eisenhardt Project."
+        );
+
+        $project = ProjectFactory::createInDirectory(
+            $directory,
+            '7.2'
         );
     }
 }
