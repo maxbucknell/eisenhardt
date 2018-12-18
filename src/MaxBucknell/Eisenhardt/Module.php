@@ -11,6 +11,8 @@ namespace MaxBucknell\Eisenhardt;
  */
 class Module
 {
+    const STANDUP_DIRECTORY_NAME = Project::DIRECTORY_NAME . '/standup';
+
     /**
      * @var string
      */
@@ -30,5 +32,17 @@ class Module
     public function getModuleDirectory()
     {
         return $this->moduleDirectory;
+    }
+
+    /**
+     * Return the directory in which to place stood up Magento installations.
+     *
+     * @return string
+     */
+    public function getStandupDirectory()
+    {
+        $moduleDirectory = $this->getModuleDirectory();
+
+        return "{$moduleDirectory}/" . static::STANDUP_DIRECTORY_NAME;
     }
 }
