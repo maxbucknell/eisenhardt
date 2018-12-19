@@ -102,5 +102,7 @@ EOT
             $directory,
             '7.2'
         );
+
+        $project->installContribFile(__DIR__ . '/../../../../standup.yml');
     }
 }
