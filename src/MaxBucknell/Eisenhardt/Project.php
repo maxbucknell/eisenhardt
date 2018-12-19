@@ -221,7 +221,7 @@ CMD;
 
         $commandResult = \shell_exec($command);
 
-        $containers = \array_slice(\explode("\n", $commandResult), 2, 1);
+        $containers = \array_slice(\explode("\n", $commandResult), 2, -1);
         $rows = \array_map(
             function ($container) {
                 $isUp = \strpos($container, 'Up') !== false;
@@ -247,7 +247,7 @@ CMD;
     {
         $infoCommand = "docker inspect {$containerName}";
         $result = \shell_exec($infoCommand);
-        $info = \json_decode($result);
+        $info = \json_decode($result,true);
 
         return $info[0]['NetworkSettings']['Networks'][$this->getNetworkName()]['IPAddress'];
     }
@@ -259,6 +259,9 @@ CMD;
      */
     public function run(RunParams $params)
     {
+        $cwd = \getcwd();
+        \chdir($this->getInstallationDirectory());
+
         $tag = $this->getRunTag($params);
         $width = \trim(\shell_exec('tput cols'));
         $ipAddress = trim(\shell_exec('hostname -I | cut -d" " -f1'));
@@ -296,6 +299,8 @@ docker run \
 CMD;
 
         \passthru($runCommand);
+
+        \chdir($cwd);
     }
 
     /**

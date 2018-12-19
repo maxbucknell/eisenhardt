@@ -57,7 +57,7 @@ class RunParams
     /**
      * @return string
      */
-    public function getPhpVersion(): string
+    public function getPhpVersion(): ?string
     {
         return $this->phpVersion;
     }

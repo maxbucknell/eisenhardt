@@ -29,7 +29,7 @@ class Module
      *
      * @return string
      */
-    public function getModuleDirectory()
+    public function getModuleDirectory(): string
     {
         return $this->moduleDirectory;
     }
@@ -39,10 +39,26 @@ class Module
      *
      * @return string
      */
-    public function getStandupDirectory()
+    public function getStandupDirectory(): string
     {
         $moduleDirectory = $this->getModuleDirectory();
 
         return "{$moduleDirectory}/" . static::STANDUP_DIRECTORY_NAME;
+    }
+
+    public function getModuleName(): string
+    {
+        return $this->getComposerManifest()['name'];
+    }
+
+    /**
+     * @return array
+     */
+    public function getComposerManifest(): array
+    {
+        return \json_decode(
+            \file_get_contents("{$this->getModuleDirectory()}/composer.json"),
+            true
+        );
     }
 }

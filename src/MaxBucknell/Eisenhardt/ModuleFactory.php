@@ -28,7 +28,7 @@ class ModuleFactory
         $workingDirectory = getcwd();
 
         try {
-            $moduleDirectory = Finder::findInParent('etc/module.xml', $workingDirectory);
+            $moduleDirectory = Finder::findInParent('composer.json', $workingDirectory);
         } catch (FileNotFoundException $e) {
             throw new \Exception('This does not appear to be a Magento 2 module');
         }

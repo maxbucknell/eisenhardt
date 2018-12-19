@@ -80,7 +80,7 @@ EOT
         $project = ProjectFactory::findFromWorkingDirectory();
 
         $command = implode(' ', $input->getArgument('container_command'));
-        $relativeDirectory = $this->project->getRelativeDirectory(getcwd());
+        $relativeDirectory = $project->getRelativeDirectory(getcwd());
         $workingDirectory = "/mnt/magento/{$relativeDirectory}";
         $params = new RunParams(
             $command,

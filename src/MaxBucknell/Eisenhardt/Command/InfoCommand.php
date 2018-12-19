@@ -50,7 +50,7 @@ EOT
                     return [
                         $row['name'],
                         $row['is_running'] ? '<bg=green;fg=black> UP </>' : '<bg=red;fg=white;options=bold>DOWN</>',
-                        $row['ip'] ?? '<not running>'
+                        $row['ip_address'] ?? '<not running>'
                     ];
                 },
                 $project->getInfo()

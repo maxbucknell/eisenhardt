@@ -6,6 +6,8 @@ namespace MaxBucknell\Eisenhardt\Command;
 
 use MaxBucknell\Eisenhardt\ModuleFactory;
 use MaxBucknell\Eisenhardt\ProjectFactory;
+use MaxBucknell\Eisenhardt\RunParams;
+use MaxBucknell\Eisenhardt\StartParams;
 use MaxBucknell\Eisenhardt\Util\MagentoInstallation;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -104,5 +106,18 @@ EOT
         );
 
         $project->installContribFile(__DIR__ . '/../../../../standup.yml');
+
+        $startParams = new StartParams(
+            false,
+            true
+        );
+        $project->start($startParams);
+
+        $composerInstall = new RunParams('composer install');
+        $project->run($composerInstall);
+
+        $project->run(new RunParams('composer config minimum-stability dev'));
+        $project->run(new RunParams('composer config repositories.local path /mnt/module'));
+        $project->run(new RunParams("composer require '{$module->getModuleName()}:*'"));
     }
 }
