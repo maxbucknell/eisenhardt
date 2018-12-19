@@ -19,11 +19,6 @@ use MaxBucknell\Eisenhardt\ProjectFactory;
 class StopCommand extends Command
 {
     /**
-     * @var Project
-     */
-    private $project;
-
-    /**
      * @inheritdoc
      */
     protected function configure()
@@ -45,31 +40,7 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
-        $workingDirectory = $this->project->getInstallationDirectory();
-        $output->writeln(
-            "Found project in `{$workingDirectory}`.",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-        chdir($workingDirectory);
-
-        $projectName = $this->project->getProjectName();
-
-        $command = <<<CMD
-docker-compose           \
-  -f .eisenhardt/base.yml \
-  -f .eisenhardt/dev.yml   \
-  -p {$projectName}         \
-  stop
-CMD
-        ;
-
-        $output->writeln(
-            "Running: {$command}",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-
-        passthru($command);
+        $project = ProjectFactory::findFromWorkingDirectory();
+        $project->stop();
     }
 }
