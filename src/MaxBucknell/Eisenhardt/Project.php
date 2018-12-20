@@ -28,8 +28,7 @@ class Project
     private $filesystem;
 
     /**
-     * @param string $installationDirectory
-     *     Base directory of Eisenhardt installation.
+     * @param string $installationDirectory Base directory of Eisenhardt installation.
      */
     public function __construct(
         string $installationDirectory
@@ -195,37 +194,20 @@ CMD;
         $cwd = \getcwd();
         \chdir($this->getInstallationDirectory());
 
-        // Docker compose has a helpful table formatter which divines
-        // the width of the terminal using stty. If this value is small
-        // enough, it will wrap the table.
-        //
-        // This is unfortunate, since we are parsing these thing
-        // ourselves, we trick it into thinking the width is bigger than
-        // it actually is.
-        //
-        // Yawn.
-        $columnSize = \explode(
-            ' ',
-            \shell_exec('stty size')
-        )[1];
-
-        \shell_exec('stty columns 3000');
 
         $command = <<<CMD
-docker-compose \
-    -f .eisenhardt/base.yml \
-    -f .eisenhardt/dev.yml \
-    -p {$this->getProjectName()} \
-    ps
+docker ps \
+    --filter "label=com.docker.compose.project={$this->getProjectName()}" \
+    --format "{{.Names}}|{{.Status}}"
 CMD;
 
-        $commandResult = \shell_exec($command);
+        $commandResult = \trim(\shell_exec($command));
 
-        $containers = \array_slice(\explode("\n", $commandResult), 2, -1);
+        $rows = \explode("\n", $commandResult);
         $rows = \array_map(
-            function ($container) {
-                $isUp = \strpos($container, 'Up') !== false;
-                $name = \explode(' ', $container)[0];
+            function ($row) {
+                [$name, $status] = \explode('|', $row);
+                $isUp = \strpos($status, 'Up') === 0;
                 $ipAddress = $isUp ? $this->getContainerIpAddress($name) : null;
 
                 return [
@@ -234,10 +216,9 @@ CMD;
                     'ip_address' => $ipAddress
                 ];
             },
-            $containers
+            $rows
         );
 
-        \shell_exec("stty columns {$columnSize}");
         \chdir($cwd);
 
         return $rows;
@@ -245,11 +226,15 @@ CMD;
 
     private function getContainerIpAddress($containerName)
     {
-        $infoCommand = "docker inspect {$containerName}";
-        $result = \shell_exec($infoCommand);
-        $info = \json_decode($result,true);
+        $command = <<<CMD
+docker inspect -f \
+    "{{ .NetworkSettings.Networks.{$this->getNetworkName()}.IPAddress }}" \
+    {$containerName}
+CMD;
 
-        return $info[0]['NetworkSettings']['Networks'][$this->getNetworkName()]['IPAddress'];
+        $result = \trim(\shell_exec($command));
+
+        return $result;
     }
 
     /**
