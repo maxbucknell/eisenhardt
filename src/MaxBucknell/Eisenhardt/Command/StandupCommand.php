@@ -7,12 +7,14 @@ namespace MaxBucknell\Eisenhardt\Command;
 use MaxBucknell\Eisenhardt\ModuleFactory;
 use MaxBucknell\Eisenhardt\ProjectFactory;
 use MaxBucknell\Eisenhardt\RunParams;
+use MaxBucknell\Eisenhardt\StandupParams;
 use MaxBucknell\Eisenhardt\StartParams;
 use MaxBucknell\Eisenhardt\Util\MagentoInstallation;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -67,42 +69,21 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $module = ModuleFactory::findFromWorkingDirectory();
-        $location = $module->getModuleDirectory();
-        $output->writeln(
-            "Found module in <info>{$location}</>",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
+        $logger = new ConsoleLogger($output);
+        $module = ModuleFactory::findFromWorkingDirectory($logger);
 
-        $installationName = \md5((string)\mt_rand());
-        $directory = $module->getStandupDirectory() . "/{$installationName}";
-
-        $output->writeln(
-            "Initialising installation in <info>{$directory}</>",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-
-        $output->writeln(
-            "Creating Magento Composer project from metapackage"
-        );
-        $projectCreateOutput = MagentoInstallation::createProject(
-            $directory,
-            $input->getOption('magento-version') ?? '2.3.0',
-            $input->getOption('commerce') ? 'enterprise' : 'community'
-        );
-
-        $output->writeln(
-            "Output: {$projectCreateOutput}",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-
-        $output->writeln(
-            "Initialising Eisenhardt Project."
-        );
+        $standupName = $module->standUpMagentoInstance(new StandupParams(
+            $input->getOption('sample-data'),
+            $input->getOption('magento-version'),
+            $input->getOption('commerce') ? 'enterprise' : 'community',
+            '7.2'
+        ));
 
         $project = ProjectFactory::createInDirectory(
-            $directory,
-            '7.2'
+            "{$module->getStandupDirectory()}/{$standupName}",
+            '7.2',
+            $logger,
+            "{$standupName}.{$module->getModuleName()}.loc"
         );
 
         $project->installContribFile(__DIR__ . '/../../../../standup.yml');
@@ -119,5 +100,6 @@ EOT
         $project->run(new RunParams('composer config minimum-stability dev'));
         $project->run(new RunParams('composer config repositories.local path /mnt/module'));
         $project->run(new RunParams("composer require '{$module->getModuleName()}:*'"));
+        $project->run(new RunParams("mysql -uroot -proot -e 'create database {$standupName};'"));
     }
 }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace MaxBucknell\Eisenhardt;
 
+use MaxBucknell\Eisenhardt\Util\MagentoInstallation;
+use Psr\Log\LoggerInterface;
+
 /**
  * Object Representing a Magento module.
  *
@@ -18,10 +21,17 @@ class Module
      */
     private $moduleDirectory;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
-        string $moduleDirectory
+        string $moduleDirectory,
+        LoggerInterface $logger
     ) {
         $this->moduleDirectory = $moduleDirectory;
+        $this->logger = $logger;
     }
 
     /**
@@ -59,6 +69,28 @@ class Module
         return \json_decode(
             \file_get_contents("{$this->getModuleDirectory()}/composer.json"),
             true
+         );
+    }
+
+    public function standUpMagentoInstance(StandupParams $params): string
+    {
+        $standupName = $this->getStandupName($params);
+
+        $directory = "{$this->getStandupDirectory()}/{$standupName}";
+
+        MagentoInstallation::createProject(
+            $directory,
+            $params,
+            $this->logger
         );
+
+        return $standupName;
+    }
+
+    private function getStandupName(StandupParams $params)
+    {
+        $data = \hash('sha256', (string)mt_rand(), false);
+
+        return \substr($data, 0, 7);
     }
 }

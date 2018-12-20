@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace MaxBucknell\Eisenhardt\Util;
 
-use MaxBucknell\Eisenhardt\Project;
+use MaxBucknell\Eisenhardt\StandupParams;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * @author Max Bucknell <max@wearejh.com>
@@ -15,37 +17,37 @@ class MagentoInstallation
      * Initialise a Magento 2 Composer project in the given directory.
      *
      * @param string $directory
-     * @param string $versionNumber
-     * @param string $edition
+     * @param StandupParams $params
+     * @param LoggerInterface $logger
      * @return string
      *
-     * @throws \Exception
      */
-    public static function createProject(string $directory, string $versionNumber, string $edition): string
-    {
-        $originalDirectory = \getcwd();
-
+    public static function create(
+        string $directory,
+        StandupParams $params,
+        LoggerInterface $logger
+    ) {
         \mkdir($directory, 0744, true);
-        \chdir($directory);
 
-        \ob_start();
-        $command = <<<CMD
-composer create-project \
-    --repository-url=https://repo.magento.com/ \
-    magento/project-{$edition}-edition:{$versionNumber} \
-    --no-install \
-    . 2>&1
-CMD;
-        $returnVal = 0;
-        \passthru($command, $returnVal);
-        $output = \ob_get_clean();
+        $command = [
+            'composer',
+            'create-project',
+            '--repository-url=https://repo.magento.com/',
+            '--no-install',
+            "magento/project-{$params->getMagentoEdition()}:{$params->getMagentoVersion()}"
+        ];
 
-        if ($returnVal !== 0) {
-            throw new \Exception("Command {$command} in {$directory} failed with: {$output}");
-        }
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $logger->info("Running command:\n{$implodedCommand}");
 
-        \chdir($originalDirectory);
+        $printedCommand = \print_r($command, true);
+        $logger->debug("Actual command:\n[$printedCommand}");
 
-        return $output;
+        $process = new Process($command, $directory);
+
+        $process->mustRun();
+
+        $logger->info("Command stdout:\n{$process->getOutput()}\n");
+        $logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
     }
 }

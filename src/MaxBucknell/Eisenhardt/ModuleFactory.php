@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MaxBucknell\Eisenhardt;
 use MaxBucknell\Eisenhardt\Util\Finder;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
@@ -20,10 +21,11 @@ class ModuleFactory
      * locate a module. If we do not find one, we give up and throw an
      * exception.
      *
-     * @throws \Exception
+     * @param LoggerInterface $logger
      * @return Module
+     * @throws \Exception
      */
-    public static function findFromWorkingDirectory()
+    public static function findFromWorkingDirectory(LoggerInterface $logger)
     {
         $workingDirectory = getcwd();
 
@@ -33,6 +35,6 @@ class ModuleFactory
             throw new \Exception('This does not appear to be a Magento 2 module');
         }
 
-        return new Module($moduleDirectory);
+        return new Module($moduleDirectory, $logger);
     }
 }
