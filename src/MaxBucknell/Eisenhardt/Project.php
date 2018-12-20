@@ -5,9 +5,11 @@
 
 namespace MaxBucknell\Eisenhardt;
 
-use Psr\Log\Test\LoggerInterfaceTest;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Object representing a Magento installation.
@@ -28,26 +30,27 @@ class Project
      */
     private $filesystem;
     /**
-     * @var LoggerInterfaceTest
+     * @var LoggerInterface
      */
     private $logger;
 
     /**
      * @param string $installationDirectory Base directory of Eisenhardt installation.
+     * @param LoggerInterface $logger
      */
     public function __construct(
         string $installationDirectory,
-        LoggerInterfaceTest $logger
+        LoggerInterface $logger
     ) {
         $this->installationDirectory = $installationDirectory;
         $this->filesystem = new Filesystem();
+        $this->logger = $logger;
 
         if (!file_exists($this->getEisenhardtDirectory())) {
             throw new FileNotFoundException(
                 "Could not find `" . static::DIRECTORY_NAME . "/` directory inside {$installationDirectory}"
             );
         }
-        $this->logger = $logger;
     }
 
     /**
@@ -127,90 +130,143 @@ class Project
      * Start the project containers.
      *
      * @param StartParams $params
+     * @throws ProcessFailedException
      */
     public function start(
         StartParams $params
     ) {
-        $cwd = \getcwd();
-        \chdir($this->getInstallationDirectory());
+        $this->logger->debug("Starting {$this->getProjectName()} Project");
 
-        $portInclude = $this->getPortInclude($params);
-        $contribInclude = $this->getContribInclude($params);
+        $eisenhardtDirectory = $this->getRelativeDirectory($this->getEisenhardtDirectory());
 
-        $command = <<<CMD
-docker-compose \
-    -f .eisenhardt/base.yml \
-    -f .eisenhardt/dev.yml \
-    {$portInclude} \
-    {$contribInclude} \
-    -p {$this->getProjectName()} \
-    up -d --force-recreate 2> /dev/null
-CMD;
+        $this->logger->debug("Project in {$this->getInstallationDirectory()}");
+        $this->logger->debug("Eisenhardt files {$eisenhardtDirectory}");
 
-        \passthru($command);
+        $command = [
+            'docker-compose',
+            "-f{$eisenhardtDirectory}base.yml",
+            "-f{$eisenhardtDirectory}dev.yml"
+        ];
 
-        \chdir($cwd);
+        if ($params->isMapPorts()) {
+            $this->logger->debug("Including ports mapping");
+            $command[] = "-f{$eisenhardtDirectory}/ports.yml";
+        }
+
+        if ($params->isIncludeContrib()) {
+            $this->logger->debug("Including contrib files");
+            foreach ($this->getContribFiles($params) as $file) {
+                $command[] = "-f{$eisenhardtDirectory}{$file}";
+            }
+        }
+
+        $command[] = "-p {$this->getProjectName()}";
+        $command[] = 'up';
+        $command[] = '-d';
+        $command[] = '--force-recreate';
+
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:\n{$implodedCommand}");
+
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:\n[$printedCommand}");
+
+        $process = new Process(
+            $command,
+            $this->getInstallationDirectory()
+        );
+
+        $process->mustRun();
+
+        $this->logger->info("Command stdout:\n{$process->getOutput()}\n");
+        $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
     }
 
     /**
      * @param StartParams $params
-     * @return string
+     * @return iterable
      */
-    private function getPortInclude(StartParams $params): string
-    {
-        return $params->isMapPorts() ? '-f .eisenhardt/ports.yml' : '';
-    }
-
-    private function getContribInclude(StartParams $params): string
+    private function getContribFiles(StartParams $params): iterable
     {
         if (!$params->isIncludeContrib()) {
-            return '';
+            return [];
         }
 
-        $files = \glob("{$this->getEisenhardtDirectory()}/contrib/*.yml");
-        $includes = \array_map(
-            function ($file) {
-                return "-f {$file}";
-            },
-            $files
-        );
+        $path = "{$this->getEisenhardtDirectory()}/contrib";
+        $files = \glob("{$path}/*.yml");
 
-        return \implode(' ', $includes);
+        foreach ($files as $absoluteFile) {
+            yield \basename($absoluteFile);
+        }
     }
 
+    /**
+     * Stop all project containers.
+     *
+     * We used to use docker-compose stop here, but it's tough to keep track
+     * of all containers, given that a contrib file can be included or excluded
+     * at start time, and we don't know what is and isn't involved.
+     */
     public function stop()
     {
-        $cwd = \getcwd();
-        \chdir($this->getInstallationDirectory());
+        foreach ($this->getInfo() as $container) {
+            $this->logger->debug("Stopping container {$container['name']}");
 
-        $command = <<<CMD
-docker-compose \
-    -f .eisenhardt/base.yml \
-    -f .eisenhardt/dev.yml \
-    -p {$this->getProjectName()} \
-    stop        
-CMD;
+            if (!$container['is_running']) {
+                $this->logger->info("Container {$container['name']} is not running");
+                continue;
+            }
 
-        \passthru($command);
+            $command = [
+                'docker',
+                'stop',
+                $container['name']
+            ];
 
-        \chdir($cwd);
+            $implodedCommand = \implode(" \\\n    ", $command);
+            $this->logger->info("Running command:\n{$implodedCommand}");
+
+            $printedCommand = \print_r($command, true);
+            $this->logger->debug("Actual command:\n[$printedCommand}");
+
+            $process = new Process($command);
+
+            $process->run();
+
+            $this->logger->info("Command stdout:\n{$process->getOutput()}\n");
+            $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+            if (!$process->isSuccessful()) {
+                $this->logger->warning("Failed to stop container {$container['name']}");
+            }
+        }
     }
 
     public function getInfo()
     {
-        $cwd = \getcwd();
-        \chdir($this->getInstallationDirectory());
+        $command = [
+            'docker',
+            'ps',
+            "--filter=label=com.docker.compose.project={$this->getProjectName()}",
+            "--format={{.Names}}|{{.Status}}"
+        ];
 
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:\n{$implodedCommand}");
 
-        $command = <<<CMD
-docker ps \
-    --filter "label=com.docker.compose.project={$this->getProjectName()}" \
-    --format "{{.Names}}|{{.Status}}"
-CMD;
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:\n[$printedCommand}");
 
-        $commandResult = \trim(\shell_exec($command));
+        $process = new Process($command);
 
-        $rows = \explode("\n", $commandResult);
+        $process->mustRun();
+
+        $result = $process->getOutput();
+
+        $this->logger->info("Command stdout:\n{$result}\n");
+        $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+        $rows = \explode("\n", \trim($result));
         $rows = \array_map(
             function ($row) {
                 [$name, $status] = \explode('|', $row);
@@ -226,22 +282,33 @@ CMD;
             $rows
         );
 
-        \chdir($cwd);
-
         return $rows;
     }
 
     private function getContainerIpAddress($containerName)
     {
-        $command = <<<CMD
-docker inspect -f \
-    "{{ .NetworkSettings.Networks.{$this->getNetworkName()}.IPAddress }}" \
-    {$containerName}
-CMD;
+        $command = [
+            'docker',
+            'inspect',
+            "-f{{ .NetworkSettings.Networks.{$this->getNetworkName()}.IPAddress }}",
+            $containerName
+        ];
 
-        $result = \trim(\shell_exec($command));
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:\n{$implodedCommand}");
 
-        return $result;
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:\n[$printedCommand}");
+
+        $process = new Process($command);
+        $process->mustRun();
+
+        $output = $process->getOutput();
+
+        $this->logger->info("Command stdout:\n{$output}\n");
+        $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+        return \trim($output);
     }
 
     /**
@@ -251,12 +318,12 @@ CMD;
      */
     public function run(RunParams $params)
     {
-        $cwd = \getcwd();
-        \chdir($this->getInstallationDirectory());
+        $uid = \getmyuid();
+        $home = \getenv('HOME');
+        $composerHome = \getenv('COMPOSER_HOME') ?? "{$home}/.config/composer";
+        $ipAddress = $this->getLocalIpAddress();
+        $sshSocket = \getenv('SSH_AUTH_SOCK');
 
-        $tag = $this->getRunTag($params);
-        $width = \trim(\shell_exec('tput cols'));
-        $ipAddress = trim(\shell_exec('hostname -I | cut -d" " -f1'));
         $xdebugString = \implode(
             ' ',
             [
@@ -267,32 +334,74 @@ CMD;
             ]
         );
 
-        $runCommand = <<<CMD
-docker run \
-    -it \
-    --rm \
-    --volumes-from="{$this->getProjectName()}_appserver_1" \
-    --net="{$this->getNetworkName()}" \
-    -u "\$(id -u):10118" \
-    -v "/etc/passwd:/etc/passwd" \
-    -v "\$HOME/.ssh/known_hosts:\$HOME/.ssh/known_hosts" \
-    -v "\$COMPOSER_HOME:\$HOME/.composer" \
-    -v "\$HOME/.npm:\$HOME/.npm" \
-    -v "\$HOME/.gitconfig:\$HOME/.gitconfig" \
-    -e COMPOSER_HOME="\$HOME/.composer" \
-    -e XDEBUG_CONFIG="{$xdebugString}" \
-    -e PHP_IDE_CONFIG="serverName='eisenhardt'" \
-    -v "\$SSH_AUTH_SOCK:\$SSH_AUTH_SOCK" \
-    -e SSH_AUTH_SOCK="\$SSH_AUTH_SOCK" \
-    -e COLUMNS={$width} \
-    -w "{$params->getWorkingDirectory()}" \
-    maxbucknell/php:{$tag} \
-    {$params->getCommand()}
-CMD;
+        $runCommand = \addslashes($params->getCommand());
+        $command = [
+            'docker',
+            'run',
+            '-it',
+            '--rm',
+            "--volumes-from={$this->getContainerId('appserver')}",
+            "--net={$this->getNetworkName()}",
+            "-u{$uid}:10118",
+            "-v/etc/passwd:/etc/passwd",
+            "-v{$home}/.ssh/known_hosts:{$home}/.ssh/known_hosts",
+            "-v{$composerHome}:{$home}/.composer",
+            "-eCOMPOSER_HOME={$home}/.composer",
+            "-v{$home}/.npm:{$home}/.npm",
+            "-v{$home}/.gitconfig:{$home}/.gitconfig",
+            "-v{$sshSocket}:{$sshSocket}",
+            "-ePHP_IDE_CONFIG=serverName='eisenhardt'",
+            "-eXDEBUG_CONFIG='{$xdebugString}'",
+            "-w{$params->getWorkingDirectory()}",
+            "maxbucknell/php:{$this->getRunTag($params)}",
+            "sh",
+            "-c",
+            $runCommand
+        ];
 
-        \passthru($runCommand);
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:\n{$implodedCommand}");
 
-        \chdir($cwd);
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:\n[$printedCommand}");
+
+        $process = new Process($command);
+        $process->setTty(true);
+
+        $process->run();
+    }
+
+    /**
+     * Get IP address of host machine on local network.
+     *
+     * @return string
+     */
+    private function getLocalIpAddress(): string
+    {
+        $command = [
+            'hostname',
+            '-I'
+        ];
+
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:\n{$implodedCommand}");
+
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:\n[$printedCommand}");
+
+        $process = new Process($command);
+        $process->run();
+        $result = $process->getOutput();
+
+        $this->logger->info("Command stdout:\n{$result}\n");
+        $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+        $ipAddresses = \explode(" ", $result);
+        $ipAddress = $ipAddresses[0];
+
+        $this->logger->info("Selected IP address: {$ipAddress}");
+
+        return $ipAddress;
     }
 
     /**
@@ -309,7 +418,7 @@ CMD;
     ) {
         if (\is_null($params->getPhpVersion())) {
             $version = $this->getPhpVersion();
-            $versionString = "{$version['major']}.{$version['minor']}";
+            $versionString = "{$version['release']}.{$version['major']}";
         } else {
             $versionString = $params->getPhpVersion();
         }
@@ -328,24 +437,69 @@ CMD;
      */
     public function getPhpVersion()
     {
-        $versionCommand = <<<CMD
-docker-compose \
-    -f .eisenhardt/base.yml \
-    -p {$this->getProjectName()} \
-    exec \
-    appserver \
-    php --version | \
-    head -1 | \
-    cut -d" " -f 2
-CMD;
+        $command = [
+            'docker',
+            'exec',
+            $this->getContainerId('appserver'),
+            'php',
+            '-r',
+            'echo PHP_VERSION;'
+        ];
 
-        $fullVersion = \shell_exec($versionCommand);
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:
+{$implodedCommand}");
+
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:
+[$printedCommand}");
+
+        $process = new Process($command);
+
+        $process->mustRun();
+
+        $result = $process->getOutput();
+
+        $this->logger->info("Command stdout:\n{$result}\n");
+        $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+        $fullVersion = \trim($result);
         $components = \explode('.', $fullVersion);
 
         return [
-            'major' => $components[0],
-            'minor' => $components[1],
-            'patch' => $components[2]
+            'release' => $components[0],
+            'major' => $components[1],
+            'minor' => $components[2]
         ];
+    }
+
+    private function getContainerId(string $service): string
+    {
+        $command = [
+            'docker',
+            'ps',
+            "--filter=label=com.docker.compose.project={$this->getProjectName()}",
+            "--filter=label=com.docker.compose.service={$service}",
+            "--format={{.ID}}"
+        ];
+
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $this->logger->info("Running command:
+{$implodedCommand}");
+
+        $printedCommand = \print_r($command, true);
+        $this->logger->debug("Actual command:
+[$printedCommand}");
+
+        $process = new Process($command);
+
+        $process->mustRun();
+
+        $result = $process->getOutput();
+
+        $this->logger->info("Command stdout:\n{$result}\n");
+        $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+        return \trim($result);
     }
 }

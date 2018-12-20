@@ -19,7 +19,8 @@
         "ext-json": "*",
         "symfony/console": "^4.1",
         "symfony/filesystem": "^4.1",
-        "psr/log": "^1.1"
+        "psr/log": "^1.1",
+        "symfony/process": "^4.2"
     },
     "bin": [
         "eisenhardt"

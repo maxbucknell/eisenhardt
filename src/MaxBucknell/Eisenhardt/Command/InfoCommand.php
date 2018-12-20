@@ -59,17 +59,4 @@ EOT
             ))
             ->render();
     }
-
-    private function getIPAddress($containerName)
-    {
-        $networkName = $this->project->getNetworkName();
-        $infoJson = shell_exec(<<<CMD
-docker inspect {$containerName}
-CMD
-        );
-
-        $info = json_decode($infoJson, true);
-
-        return $info[0]['NetworkSettings']['Networks'][$networkName]['IPAddress'];
-    }
 }
