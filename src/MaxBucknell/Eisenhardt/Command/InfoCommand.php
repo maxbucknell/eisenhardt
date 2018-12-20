@@ -5,6 +5,7 @@
 
 namespace MaxBucknell\Eisenhardt\Command;
 
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +41,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $project = ProjectFactory::findFromWorkingDirectory();
+        $logger = new ConsoleLogger($output);
+        $project = ProjectFactory::findFromWorkingDirectory($logger);
 
         $infoTable = new Table($output);
         $infoTable

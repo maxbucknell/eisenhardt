@@ -8,6 +8,7 @@ namespace MaxBucknell\Eisenhardt\Command;
 use MaxBucknell\Eisenhardt\StartParams;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
@@ -59,7 +60,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $project = ProjectFactory::findFromWorkingDirectory();
+        $logger = new ConsoleLogger($output);
+        $project = ProjectFactory::findFromWorkingDirectory($logger);
 
         $params = new StartParams(
             $input->getOption('map-ports'),

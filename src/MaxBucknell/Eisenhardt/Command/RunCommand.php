@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use MaxBucknell\Eisenhardt\Project;
 use MaxBucknell\Eisenhardt\ProjectFactory;
@@ -77,11 +78,13 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $project = ProjectFactory::findFromWorkingDirectory();
+        $logger = new ConsoleLogger($output);
+        $project = ProjectFactory::findFromWorkingDirectory($logger);
 
         $command = implode(' ', $input->getArgument('container_command'));
         $relativeDirectory = $project->getRelativeDirectory(getcwd());
         $workingDirectory = "/mnt/magento/{$relativeDirectory}";
+
         $params = new RunParams(
             $command,
             $workingDirectory,

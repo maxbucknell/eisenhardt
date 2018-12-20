@@ -6,6 +6,7 @@
 namespace MaxBucknell\Eisenhardt;
 
 use MaxBucknell\Eisenhardt\Util\Finder;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
@@ -21,9 +22,9 @@ class ProjectFactory
      * @throws \Exception
      * @return Project
      */
-    public static function findFromWorkingDirectory(): Project
+    public static function findFromWorkingDirectory(LoggerInterface $logger): Project
     {
-        return static::findFromDirectory(\getcwd());
+        return static::findFromDirectory(\getcwd(), $logger);
     }
 
     /**
@@ -37,7 +38,7 @@ class ProjectFactory
      * @throws \Exception
      * @return Project
      */
-    public static function findFromDirectory(string $directory): Project
+    public static function findFromDirectory(string $directory, LoggerInterface $logger): Project
     {
         try {
             $installationDirectory = Finder::findInParent(Project::DIRECTORY_NAME, $directory);
@@ -45,7 +46,7 @@ class ProjectFactory
             throw new \Exception('Not an eisenhardt project. Please run eisenhardt init.');
         }
 
-        return new Project($installationDirectory);
+        return new Project($installationDirectory, $logger);
     }
 
     /**
@@ -60,6 +61,7 @@ class ProjectFactory
     public static function createInDirectory(
         string $directory,
         string $phpVersion,
+        LoggerInterface $logger,
         string $hostname = null
     ): Project {
         $eisenhardtDirectory = "{$directory}/.eisenhardt";
@@ -70,7 +72,7 @@ class ProjectFactory
             $phpVersion
         );
 
-        $project = static::findFromDirectory($directory);
+        $project = static::findFromDirectory($directory, $logger);
 
         static::initialiseTls(
             $eisenhardtDirectory,

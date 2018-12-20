@@ -5,6 +5,7 @@
 
 namespace MaxBucknell\Eisenhardt;
 
+use Psr\Log\Test\LoggerInterfaceTest;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
@@ -26,12 +27,17 @@ class Project
      * @var Filesystem
      */
     private $filesystem;
+    /**
+     * @var LoggerInterfaceTest
+     */
+    private $logger;
 
     /**
      * @param string $installationDirectory Base directory of Eisenhardt installation.
      */
     public function __construct(
-        string $installationDirectory
+        string $installationDirectory,
+        LoggerInterfaceTest $logger
     ) {
         $this->installationDirectory = $installationDirectory;
         $this->filesystem = new Filesystem();
@@ -41,6 +47,7 @@ class Project
                 "Could not find `" . static::DIRECTORY_NAME . "/` directory inside {$installationDirectory}"
             );
         }
+        $this->logger = $logger;
     }
 
     /**

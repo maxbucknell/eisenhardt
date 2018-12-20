@@ -7,6 +7,7 @@ namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use MaxBucknell\Eisenhardt\Project;
 use MaxBucknell\Eisenhardt\ProjectFactory;
@@ -40,7 +41,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $project = ProjectFactory::findFromWorkingDirectory();
+        $logger = new ConsoleLogger($output);
+        $project = ProjectFactory::findFromWorkingDirectory($logger);
         $project->stop();
     }
 }
