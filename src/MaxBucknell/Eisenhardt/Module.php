@@ -91,6 +91,6 @@ class Module
     {
         $data = \hash('sha256', (string)mt_rand(), false);
 
-        return \substr($data, 0, 7);
+        return 'eps' . \substr($data, 0, 7);
     }
 }
