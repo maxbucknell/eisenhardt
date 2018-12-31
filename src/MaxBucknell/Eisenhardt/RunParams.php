@@ -7,7 +7,7 @@ namespace MaxBucknell\Eisenhardt;
 class RunParams
 {
     /**
-     * @var string
+     * @var array
      */
     private $command;
 
@@ -27,7 +27,7 @@ class RunParams
     private $workingDirectory;
 
     public function __construct(
-        string $command = 'bash',
+        array $command = ['bash'],
         string $workingDirectory = '/mnt/magento',
         bool $debug = false,
         string $phpVersion = null
@@ -41,7 +41,7 @@ class RunParams
     /**
      * @return string
      */
-    public function getCommand(): string
+    public function getCommand(): array
     {
         return $this->command;
     }

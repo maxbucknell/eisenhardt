@@ -334,7 +334,6 @@ class Project
             ]
         );
 
-        $runCommand = \addslashes($params->getCommand());
         $command = [
             'docker',
             'run',
@@ -353,11 +352,10 @@ class Project
             "-ePHP_IDE_CONFIG=serverName='eisenhardt'",
             "-eXDEBUG_CONFIG='{$xdebugString}'",
             "-w{$params->getWorkingDirectory()}",
-            "maxbucknell/php:{$this->getRunTag($params)}",
-            "sh",
-            "-c",
-            $runCommand
+            "maxbucknell/php:{$this->getRunTag($params)}"
         ];
+
+        \array_push($command, ...$params->getCommand());
 
         $implodedCommand = \implode(" \\\n    ", $command);
         $this->logger->info("Running command:\n{$implodedCommand}");

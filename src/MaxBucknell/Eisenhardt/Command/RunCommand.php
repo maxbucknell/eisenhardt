@@ -81,12 +81,11 @@ EOT
         $logger = new ConsoleLogger($output);
         $project = ProjectFactory::findFromWorkingDirectory($logger);
 
-        $command = implode(' ', $input->getArgument('container_command'));
         $relativeDirectory = $project->getRelativeDirectory(getcwd());
         $workingDirectory = "/mnt/magento/{$relativeDirectory}";
 
         $params = new RunParams(
-            $command,
+            $input->getArgument('container_command'),
             $workingDirectory,
             $input->getOption('debug'),
             $input->getOption('php-version')
