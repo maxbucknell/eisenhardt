@@ -78,7 +78,7 @@ class Module
 
         $directory = "{$this->getStandupDirectory()}/{$standupName}";
 
-        MagentoInstallation::createProject(
+        MagentoInstallation::create(
             $directory,
             $params,
             $this->logger
