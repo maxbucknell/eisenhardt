@@ -334,14 +334,22 @@ class Project
             ]
         );
 
+        $userString = $params->isAsRoot() ? 'root:root' : "{$uid}:10118";
+
         $command = [
             'docker',
             'run',
-            '-it',
+        ];
+
+        if ($params->isInteractive()) {
+            $command[] = '-it';
+        }
+
+        \array_push($command, ...[
             '--rm',
             "--volumes-from={$this->getContainerId('appserver')}",
             "--net={$this->getNetworkName()}",
-            "-u{$uid}:10118",
+            "-u{$userString}",
             "-v/etc/passwd:/etc/passwd",
             "-v{$home}/.ssh/known_hosts:{$home}/.ssh/known_hosts",
             "-v{$composerHome}:{$home}/.composer",
@@ -353,7 +361,7 @@ class Project
             "-eXDEBUG_CONFIG='{$xdebugString}'",
             "-w{$params->getWorkingDirectory()}",
             "maxbucknell/php:{$this->getRunTag($params)}"
-        ];
+        ])  ;
 
         \array_push($command, ...$params->getCommand());
 
@@ -364,9 +372,17 @@ class Project
         $this->logger->debug("Actual command:\n[$printedCommand}");
 
         $process = new Process($command);
-        $process->setTty(true);
+
+        if ($params->isInteractive()) {
+            $process->setTty(true);
+        }
 
         $process->run();
+
+        if (!$params->isInteractive()) {
+            $this->logger->debug("Command stdout:\n{$process->getOutput()}\n");
+            $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+        }
     }
 
     /**
@@ -499,5 +515,116 @@ class Project
         $this->logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
 
         return \trim($result);
+    }
+
+    public function repairPermissions()
+    {
+        $id = \getmyuid();
+        $commands = [
+            'file ownership' => [
+                'find',
+                '.',
+                '-type',
+                'd',
+                '-path',
+                './.eisenhardt',
+                '-prune',
+                '-o',
+                '-exec',
+                'chown',
+                '-v',
+                "{$id}:10118",
+                '{}',
+                ';'
+            ],
+            'file permissions' => [
+                'find',
+                '.',
+                '-type',
+                'd',
+                '-path',
+                './.eisenhardt',
+                '-prune',
+                '-o',
+                '-type',
+                'f',
+                '-exec',
+                'chmod',
+                '-v',
+                '744',
+                '{}',
+                ';'
+            ],
+            'directory permissions' => [
+                'find',
+                '.',
+                '-type',
+                'd',
+                '-path',
+                './.eisenhardt',
+                '-prune',
+                '-o',
+                '-type',
+                'd',
+                '-exec',
+                'chmod',
+                '-v',
+                '755',
+                '{}',
+                ';',
+                '-exec',
+                'chmod',
+                '-v',
+                'g+s',
+                '{}',
+                ';'
+            ],
+            'var permissions' => [
+                'chmod',
+                '-v',
+                '-R',
+                'g+w',
+                'var'
+            ],
+            'pub permissions' => [
+                'chmod',
+                '-v',
+                '-R',
+                'g+w',
+                'pub'
+            ],
+            'app/etc permissions' => [
+                'chmod',
+                '-v',
+                '-R',
+                'g+w',
+                'app/etc'
+            ],
+            'generated permissions' => [
+                'chmod',
+                '-v',
+                '-R',
+                'g+w',
+                'generated'
+            ],
+            'bin/magento permissions' => [
+                'chmod',
+                '-v',
+                '+x',
+                'bin/magento'
+            ],
+        ];
+
+        foreach ($commands as $description => $command) {
+            $this->logger->info("Fixing {$description}");
+            $this->run(new RunParams(
+                $command,
+                '/mnt/magento',
+                false,
+                null,
+                true,
+                false
+            ));
+        }
     }
 }

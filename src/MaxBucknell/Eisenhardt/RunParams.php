@@ -26,16 +26,30 @@ class RunParams
      */
     private $workingDirectory;
 
+    /**
+     * @var bool
+     */
+    private $asRoot;
+
+    /**
+     * @var bool
+     */
+    private $interactive;
+
     public function __construct(
         array $command = ['bash'],
         string $workingDirectory = '/mnt/magento',
         bool $debug = false,
-        string $phpVersion = null
+        string $phpVersion = null,
+        bool $asRoot = false,
+        bool $interactive = true
     ) {
         $this->command = $command;
         $this->phpVersion = $phpVersion;
         $this->debug = $debug;
         $this->workingDirectory = $workingDirectory;
+        $this->asRoot = $asRoot;
+        $this->interactive = $interactive;
     }
 
     /**
@@ -68,5 +82,21 @@ class RunParams
     public function isDebug(): bool
     {
         return $this->debug;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAsRoot(): bool
+    {
+        return $this->asRoot;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInteractive(): bool
+    {
+        return $this->interactive;
     }
 }
