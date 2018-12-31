@@ -8,6 +8,8 @@ namespace MaxBucknell\Eisenhardt;
 use MaxBucknell\Eisenhardt\Util\Finder;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 
 /**
  * Create Projects based on current state.
@@ -19,8 +21,9 @@ class ProjectFactory
     /**
      * Get a Project object based on the current working directory.
      *
-     * @throws \Exception
+     * @param LoggerInterface $logger
      * @return Project
+     * @throws \Exception
      */
     public static function findFromWorkingDirectory(LoggerInterface $logger): Project
     {
@@ -35,8 +38,9 @@ class ProjectFactory
      * give up and throw an exception.
      *
      * @param string $directory Directory in which to start looking for a project.
-     * @throws \Exception
+     * @param LoggerInterface $logger
      * @return Project
+     * @throws \Exception
      */
     public static function findFromDirectory(string $directory, LoggerInterface $logger): Project
     {
@@ -54,6 +58,7 @@ class ProjectFactory
      *
      * @param string $directory
      * @param string $phpVersion
+     * @param LoggerInterface $logger
      * @param string|null $hostname
      * @return Project
      * @throws \Exception
@@ -66,17 +71,24 @@ class ProjectFactory
     ): Project {
         $eisenhardtDirectory = "{$directory}/.eisenhardt";
 
+        $logger->debug("Initialising project in {$eisenhardtDirectory}");
+
         static::copyEisenhardtFiles($eisenhardtDirectory);
+
+        $logger->debug("Copied project files into {$eisenhardtDirectory}");
+
         static::templateEisenhardtFiles(
             $eisenhardtDirectory,
             $phpVersion
         );
 
+        $logger->debug("Configured project files to use PHP {$phpVersion}");
+
         $project = static::findFromDirectory($directory, $logger);
 
         static::initialiseTls(
-            $eisenhardtDirectory,
-            $hostname ?? $project->getProjectName() . '.loc'
+            $project,
+            $logger
         );
 
         return $project;
@@ -111,30 +123,53 @@ class ProjectFactory
     /**
      * Initialise TLS certificates for a project.
      *
-     * @param string $hostname
-     * @param string $eisenhardtDirectory
+     * @param Project $project
+     * @param LoggerInterface $logger
      * @return string
      */
     private static function initialiseTls(
-        string $eisenhardtDirectory,
-        string $hostname
-    ): string {
-        $cwd = \getcwd();
-        \chdir($eisenhardtDirectory);
+        Project $project,
+        LoggerInterface $logger
+    ) {
+        $tlsDirectory = "{$project->getEisenhardtDirectory()}/tls";
+        $hostname = "{$project->getProjectName()}.loc";
 
-        \mkdir('tls');
-        \chdir('tls');
+        $logger->debug("Setting up TLS certificates in {$tlsDirectory} for {$hostname}");
 
-        $mkcertCommand = "mkcert {$hostname} *.{$hostname} 2>&1";
-        $mkcertOutput = \shell_exec($mkcertCommand);
+        $logger->debug("Creating directory {$tlsDirectory}");
 
-        var_dump($mkcertOutput);
+        $fs = new Filesystem();
+        $fs->mkdir($tlsDirectory);
 
-        shell_exec("mv {$hostname}+1.pem crt.pem");
-        shell_exec("mv {$hostname}+1-key.pem key.pem");
+        $command = [
+            'mkcert',
+            "{$hostname}",
+            "*.{$hostname}"
+        ];
 
-        \chdir($cwd);
+        $implodedCommand = \implode(" \\\n    ", $command);
+        $logger->info("Running command:\n{$implodedCommand}");
 
-        return $mkcertOutput;
+        $printedCommand = \print_r($command, true);
+        $logger->debug("Actual command:\n[$printedCommand}");
+
+        $process = new Process($command, $tlsDirectory);
+
+        $process->mustRun();
+
+        $logger->info("Command stdout:\n{$process->getOutput()}\n");
+        $logger->debug("Command stderr:\n{$process->getErrorOutput()}\n");
+
+        $logger->debug("Renaming certificate files");
+
+        $fs->rename(
+            "{$tlsDirectory}/{$hostname}+1.pem",
+            "{$tlsDirectory}/crt.pem"
+        );
+
+        $fs->rename(
+            "{$tlsDirectory}/{$hostname}+1-key.pem",
+            "{$tlsDirectory}/key.pem"
+        );
     }
 }
