@@ -156,7 +156,7 @@ class Project
         if ($params->isIncludeContrib()) {
             $this->logger->debug("Including contrib files");
             foreach ($this->getContribFiles($params) as $file) {
-                $command[] = "-f{$eisenhardtDirectory}{$file}";
+                $command[] = "-f{$eisenhardtDirectory}/contrib/{$file}";
             }
         }
 
