@@ -94,12 +94,48 @@ EOT
         );
         $project->start($startParams);
 
-        $composerInstall = new RunParams('composer install');
-        $project->run($composerInstall);
+        $project->run(
+            new RunParams([
+                'composer',
+                'install'
+            ])
+        );
 
-        $project->run(new RunParams('composer config minimum-stability dev'));
-        $project->run(new RunParams('composer config repositories.local path /mnt/module'));
-        $project->run(new RunParams("composer require '{$module->getModuleName()}:*'"));
-        $project->run(new RunParams("mysql -uroot -proot -e 'create database {$standupName};'"));
+        $project->run(
+            new RunParams([
+                'composer',
+                'config',
+                'minimum-stability',
+                'dev'
+            ])
+        );
+
+        $project->run(
+            new RunParams([
+                'composer',
+                'config',
+                'repositories.local',
+                'path',
+                '/mnt/module'
+            ])
+        );
+
+        $project->run(
+            new RunParams([
+                'composer',
+                'require',
+                "{$module->getModuleName()}:*"
+            ])
+        );
+
+        $project->run(
+            new RunParams([
+                'mysql',
+                '-uroot',
+                '-proot',
+                '-hdatabase',
+                "-ecreate database {$standupName};"
+            ])
+        );
     }
 }
