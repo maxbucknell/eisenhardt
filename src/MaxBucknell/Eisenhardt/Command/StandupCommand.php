@@ -74,7 +74,7 @@ EOT
 
         $standupName = $module->standUpMagentoInstance(new StandupParams(
             $input->getOption('sample-data'),
-            $input->getOption('magento-version'),
+            $input->getOption('magento-version') ?? '2.3',
             $input->getOption('commerce') ? 'enterprise' : 'community',
             '7.2'
         ));
