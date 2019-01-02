@@ -94,10 +94,12 @@ EOT
         );
         $project->start($startParams);
 
+        $project->repairPermissions();
+
         $project->run(
             new RunParams([
                 'composer',
-                'install'
+                'install',
             ])
         );
 

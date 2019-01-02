@@ -373,6 +373,8 @@ class Project
 
         $process = new Process($command);
 
+        $process->setTimeout(3600);
+
         if ($params->isInteractive()) {
             $process->setTty(true);
         }
