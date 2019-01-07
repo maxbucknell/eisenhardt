@@ -5,6 +5,7 @@
 
 namespace MaxBucknell\Eisenhardt;
 
+use MaxBucknell\Eisenhardt\Util\Platform;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -176,6 +177,8 @@ class Project
             $this->getInstallationDirectory()
         );
 
+        $process->setTimeout(3600);
+
         $process->mustRun();
 
         $this->logger->info("Command stdout:\n{$process->getOutput()}\n");
@@ -320,14 +323,19 @@ class Project
     {
         $uid = \getmyuid();
         $home = \getenv('HOME');
-        $composerHome = \getenv('COMPOSER_HOME') ?? "{$home}/.config/composer";
-        $ipAddress = $this->getLocalIpAddress();
-        $sshSocket = \getenv('SSH_AUTH_SOCK');
+
+        $platform = Platform::getOperatingSystem($this->logger);
+
+        if ($platform === Platform::NATIVE) {
+            $remoteHost = $this->getLocalIpAddress();
+        } else {
+            $remoteHost = 'host.docker.internal';
+        }
 
         $xdebugString = \implode(
             ' ',
             [
-                "remote_host={$ipAddress}",
+                "remote_host={$remoteHost}",
                 'remote_connect_back=0',
                 'xdebug.remote_mode=req',
                 'xdebug.remote_port=9000'
@@ -351,17 +359,23 @@ class Project
             "--net={$this->getNetworkName()}",
             "-u{$userString}",
             "-v/etc/passwd:/etc/passwd",
-            "-v{$home}/.ssh/known_hosts:{$home}/.ssh/known_hosts",
-            "-v{$composerHome}:{$home}/.composer",
-            "-eCOMPOSER_HOME={$home}/.composer",
-            "-v{$home}/.npm:{$home}/.npm",
+            "-vcomposer_volume:/composer",
+            "-eCOMPOSER_HOME=/composer",
             "-v{$home}/.gitconfig:{$home}/.gitconfig",
-            "-v{$sshSocket}:{$sshSocket}",
             "-ePHP_IDE_CONFIG=serverName='eisenhardt'",
-            "-eXDEBUG_CONFIG='{$xdebugString}'",
+            "-eXDEBUG_CONFIG='{$xdebugString}'"
+        ]);
+
+        if ($platform === Platform::NATIVE) {
+            $sshSocket = \getenv('SSH_AUTH_SOCK');
+            $command[] = "-v{$sshSocket}:{$sshSocket}";
+            $command[] = "-eSSH_AUTH_SOCK={$sshSocket}";
+        }
+
+        \array_push($command, ...[
             "-w{$params->getWorkingDirectory()}",
             "maxbucknell/php:{$this->getRunTag($params)}"
-        ])  ;
+        ]);
 
         \array_push($command, ...$params->getCommand());
 
