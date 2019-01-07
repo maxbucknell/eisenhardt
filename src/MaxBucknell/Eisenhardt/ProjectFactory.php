@@ -116,8 +116,30 @@ class ProjectFactory
         string $directory,
         string $phpVersion
     ) {
-        $templateCommand = "find {$directory} -type f -exec sed -i 's/{{version}}/{$phpVersion}/' {} \;";
-        \shell_exec($templateCommand);
+        $engine = new \Mustache_Engine();
+
+        $directoryIterator = new \RecursiveDirectoryIterator(
+            $directory,
+            \RecursiveDirectoryIterator::CURRENT_AS_PATHNAME
+        );
+
+        $files = new \RecursiveIteratorIterator($directoryIterator);
+
+        foreach ($files as $file) {
+            if (!\is_file($file)) {
+                continue;
+            }
+
+            \file_put_contents(
+                $file,
+                $engine->render(
+                    \file_get_contents($file),
+                    [
+                        'version' => $phpVersion
+                    ]
+                )
+            );
+        }
     }
 
     /**
