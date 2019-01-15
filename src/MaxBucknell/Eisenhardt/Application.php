@@ -6,6 +6,7 @@
 namespace MaxBucknell\Eisenhardt;
 
 use MaxBucknell\Eisenhardt\Command\StandupCommand;
+use MaxBucknell\Eisenhardt\Command\SyncCommand;
 use Symfony\Component\Console\Application as ConsoleApplication;
 
 use MaxBucknell\Eisenhardt\Command\InitCommand;
@@ -27,12 +28,15 @@ class Application extends ConsoleApplication
             '1.0.0-dev'
         );
 
-        $this->add(new InitCommand());
-        $this->add(new RunCommand());
-        $this->add(new StartCommand());
-        $this->add(new StopCommand());
-        $this->add(new InfoCommand());
-        $this->add(new FixPermissionsCommand());
-        $this->add(new StandupCommand());
+        $this->addCommands([
+            new InitCommand(),
+            new RunCommand(),
+            new StartCommand(),
+            new StopCommand(),
+            new InfoCommand(),
+            new FixPermissionsCommand(),
+            new StandupCommand(),
+            new SyncCommand()
+        ]);
     }
 }

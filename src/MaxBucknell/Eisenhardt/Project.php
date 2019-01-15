@@ -664,4 +664,9 @@ class Project
             ));
         }
     }
+
+    public function getVolumeName()
+    {
+        return "{$this->getProjectName()}_src_volume";
+    }
 }
