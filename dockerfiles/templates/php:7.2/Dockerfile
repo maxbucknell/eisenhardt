@@ -25,6 +25,7 @@ RUN set -xe; \
                 json \
                 mbstring \
                 mysqli \
+                opcache \
                 pdo \
                 pdo_mysql \
                 soap \

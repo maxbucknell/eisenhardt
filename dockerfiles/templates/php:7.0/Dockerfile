@@ -26,6 +26,7 @@ RUN set -xe; \
                 mbstring \
                 mcrypt \
                 mysqli \
+                opcache \
                 pdo \
                 pdo_mysql \
                 soap \

@@ -27,6 +27,7 @@ RUN set -xe; \
                 mysqli \
                 pdo \
                 pdo_mysql \
+                opcache \
                 soap \
                 xsl \
                 zip \
