@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  appserver:
+    depends:
+      - "database"
+
+  database:
+    image: percona:5.6
+    networks:
+      - "eisenhardt"
+    volumes:
+      - "./servers/eisenhardt.my.cnf:/etc/mysql/my.cnf"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"

@@ -151,14 +151,31 @@ class Project
 
         if ($params->isMapPorts()) {
             $this->logger->debug("Including ports mapping");
-            $command[] = "-f{$eisenhardtDirectory}/ports.yml";
+            $command[] = "-f{$eisenhardtDirectory}ports.yml";
         }
 
         if ($params->isIncludeContrib()) {
             $this->logger->debug("Including contrib files");
             foreach ($this->getContribFiles($params) as $file) {
-                $command[] = "-f{$eisenhardtDirectory}/contrib/{$file}";
+                $command[] = "-f{$eisenhardtDirectory}contrib/{$file}";
             }
+        }
+
+        if ($params->isIncludePlatform()) {
+            $platform = Platform::getOperatingSystem($this->logger);
+            $this->logger->debug("Including platform file for {$platform}");
+
+            $command[] = "-f{$eisenhardtDirectory}{$platform}.yml";
+        }
+
+        if ($params->isIncludeDatabase()) {
+            $this->logger->debug("Including database file");
+            $command[] = "-f{$eisenhardtDirectory}db.yml";
+        }
+
+        if ($params->isIncludeDatabase() && $params->isMapPorts()) {
+            $this->logger->debug("Including database port mapping");
+            $command[] = "-f{$eisenhardtDirectory}db-ports.yml";
         }
 
         $command[] = "-p {$this->getProjectName()}";
@@ -353,14 +370,18 @@ class Project
             $command[] = '-it';
         }
 
+        $passwd = \realpath('/etc/passwd');
+
         \array_push($command, ...[
             '--rm',
             "--volumes-from={$this->getContainerId('appserver')}",
             "--net={$this->getNetworkName()}",
             "-u{$userString}",
-            "-v/etc/passwd:/etc/passwd",
+            "-v{$passwd}:/etc/passwd",
+            "-v{$this->getInstallationDirectory()}:/mnt/volume",
             "-vcomposer_volume:/composer",
             "-eCOMPOSER_HOME=/composer",
+            "-eHOME=/tmp",
             "-v{$home}/.gitconfig:{$home}/.gitconfig",
             "-ePHP_IDE_CONFIG=serverName='eisenhardt'",
             "-eXDEBUG_CONFIG='{$xdebugString}'"

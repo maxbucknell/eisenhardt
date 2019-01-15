@@ -17,7 +17,7 @@ services:
     networks:
       - "eisenhardt"
     volumes:
-      - "..:/mnt/magento"
+      - "src_volume:/mnt/magento"
       - "./servers/mailhog.eisenhardt.php.ini:/usr/local/etc/php/conf.d/mailhog.eisenhardt.php.ini"
       - "./servers/eisenhardt.ssmtp.conf:/etc/ssmtp/ssmtp.conf"
       - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"

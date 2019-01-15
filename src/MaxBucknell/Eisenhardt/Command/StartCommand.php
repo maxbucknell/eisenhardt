@@ -43,6 +43,18 @@ class StartCommand extends Command
                         'c',
                         InputOption::VALUE_NONE,
                         'Ignore YML files from .eisenhardt/contrib/*'
+                    ),
+                    new InputOption(
+                        'no-platform',
+                        null,
+                        InputOption::VALUE_NONE,
+                        'Do not include platform files (e.g. macos.yml)'
+                    ),
+                    new InputOption(
+                        'no-db',
+                        null,
+                        InputOption::VALUE_NONE,
+                        'Do not include a database container in this configuration.'
                     )
                 ])
             )
@@ -65,28 +77,14 @@ EOT
 
         $params = new StartParams(
             $input->getOption('map-ports'),
-            !$input->getOption('no-contrib')
+            !$input->getOption('no-contrib'),
+            !$input->getOption('no-platform'),
+            !$input->getOption('no-db')
         );
 
         $project->start($params);
 
         $output->writeln('All containers started:');
         $output->writeln('<info>Run <fg=yellow>eisenhardt info</> to view IP addresses and container statuses.</>');
-    }
-
-    private function getContribInclude()
-    {
-        $eisenhardtDirectory = $this->project->getEisenhardtDirectory();
-        $files = \glob("{$eisenhardtDirectory}/contrib/*.yml");
-
-        return \implode(
-            " ",
-            \array_map(
-                function ($file) {
-                    return "-f $file";
-                },
-                $files
-            )
-        );
     }
 }

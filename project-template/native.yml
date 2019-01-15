@@ -1,0 +1,9 @@
+version: '3'
+
+volumes:
+  src_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/..
+      o: bind

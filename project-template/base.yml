@@ -1,5 +1,8 @@
 version: '3'
 
+volumes:
+  src_volume:
+
 services:
   varnish_nginx:
     image: "nginx:alpine"
@@ -17,7 +20,7 @@ services:
       - "eisenhardt"
     volumes:
       - "./servers/eisenhardt.nginx.conf:/etc/nginx/nginx.conf"
-      - "../pub:/mnt/magento/pub"
+      - "src_volume:/mnt/magento"
     depends_on:
       - "appserver"
 
@@ -28,22 +31,11 @@ services:
     volumes:
       - "./servers/eisenhardt.php.ini:/usr/local/etc/php/php.ini"
       - "./servers/eisenhardt.php-fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
-      - "..:/mnt/magento"
+      - "src_volume:/mnt/magento"
     depends_on:
-      - "database"
       - "cache"
       - "session"
       - "rabbitmq"
-
-  database:
-    image: percona:5.6
-    networks:
-      - "eisenhardt"
-    volumes:
-      - "./servers/eisenhardt.my.cnf:/etc/mysql/my.cnf"
-      - "./data:/var/lib/mysql"
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"
 
   cache:
     image: "redis:alpine"

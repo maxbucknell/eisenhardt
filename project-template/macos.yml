@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  appserver_debug:
+      volumes:
+        - "./servers/macos.eisenhardt.php.ini:/usr/local/etc/php/php.ini"
