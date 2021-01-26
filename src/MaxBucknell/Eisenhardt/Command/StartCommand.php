@@ -5,8 +5,10 @@
 
 namespace MaxBucknell\Eisenhardt\Command;
 
+use MaxBucknell\Eisenhardt\StartParams;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,11 +23,6 @@ use MaxBucknell\Eisenhardt\ProjectFactory;
 class StartCommand extends Command
 {
     /**
-     * @var Project
-     */
-    private $project;
-
-    /**
      * @inheritdoc
      */
     protected function configure()
@@ -38,8 +35,14 @@ class StartCommand extends Command
                     new InputOption(
                         'map-ports',
                         'p',
-                        null,
+                        InputOption::VALUE_NONE,
                         'Map important ports to your host'
+                    ),
+                    new InputOption(
+                        'no-contrib',
+                        'c',
+                        InputOption::VALUE_NONE,
+                        'Ignore YML files from .eisenhardt/contrib/*'
                     )
                 ])
             )
@@ -57,37 +60,33 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
+        $logger = new ConsoleLogger($output);
+        $project = ProjectFactory::findFromWorkingDirectory($logger);
 
-        $p = $input->getOption('map-ports');
-
-        $portInclude = $p ? '-f .eisenhardt/ports.yml' : '';
-        $workingDirectory = $this->project->getInstallationDirectory();
-        $output->writeln(
-            "Found project in `{$workingDirectory}`.",
-            OutputInterface::VERBOSITY_VERBOSE
+        $params = new StartParams(
+            $input->getOption('map-ports'),
+            !$input->getOption('no-contrib')
         );
-        chdir($workingDirectory);
 
-        $projectName = $this->project->getProjectName();
+        $project->start($params);
 
-        $output->writeln('Starting...');
-        $command = <<<CMD
-docker-compose                \
-  -f .eisenhardt/base.yml      \
-  -f .eisenhardt/dev.yml        \
-  {$portInclude}                 \
-  -p {$projectName}               \
-  up -d --force-recreate 2> /dev/null
-CMD
-        ;
-
-        $output->writeln(
-            "Running: {$command}",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-        passthru($command);
         $output->writeln('All containers started:');
         $output->writeln('<info>Run <fg=yellow>eisenhardt info</> to view IP addresses and container statuses.</>');
+    }
+
+    private function getContribInclude()
+    {
+        $eisenhardtDirectory = $this->project->getEisenhardtDirectory();
+        $files = \glob("{$eisenhardtDirectory}/contrib/*.yml");
+
+        return \implode(
+            " ",
+            \array_map(
+                function ($file) {
+                    return "-f $file";
+                },
+                $files
+            )
+        );
     }
 }

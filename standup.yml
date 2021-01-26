@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  appserver:
+    volumes:
+      - "../../../..:/mnt/module"
+
+  appserver_debug:
+    volumes:
+      - "../../../..:/mnt/module"

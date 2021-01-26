@@ -7,6 +7,7 @@ namespace MaxBucknell\Eisenhardt\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use MaxBucknell\Eisenhardt\Project;
 use MaxBucknell\Eisenhardt\ProjectFactory;
@@ -18,11 +19,6 @@ use MaxBucknell\Eisenhardt\ProjectFactory;
  */
 class StopCommand extends Command
 {
-    /**
-     * @var Project
-     */
-    private $project;
-
     /**
      * @inheritdoc
      */
@@ -45,31 +41,8 @@ EOT
         InputInterface $input,
         OutputInterface $output
     ) {
-        $this->project = ProjectFactory::findFromWorkingDirectory();
-
-        $workingDirectory = $this->project->getInstallationDirectory();
-        $output->writeln(
-            "Found project in `{$workingDirectory}`.",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-        chdir($workingDirectory);
-
-        $projectName = $this->project->getProjectName();
-
-        $command = <<<CMD
-docker-compose           \
-  -f .eisenhardt/base.yml \
-  -f .eisenhardt/dev.yml   \
-  -p {$projectName}         \
-  stop
-CMD
-        ;
-
-        $output->writeln(
-            "Running: {$command}",
-            OutputInterface::VERBOSITY_VERBOSE
-        );
-
-        passthru($command);
+        $logger = new ConsoleLogger($output);
+        $project = ProjectFactory::findFromWorkingDirectory($logger);
+        $project->stop();
     }
 }
